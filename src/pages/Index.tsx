@@ -4,8 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import heroImage from "@/assets/hero-bg.jpg";
-import educationBg from "@/assets/education-bg.jpg";
+// import heroImage from "@/assets/hero-bg.jpg";
+// import educationBg from "@/assets/education-bg.jpg";
 import { 
   BookOpen, 
   Users, 
@@ -89,13 +89,9 @@ const Index = () => {
       
       {/* Hero Section */}
       <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <img 
-            src={heroImage} 
-            alt="Educational background" 
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 hero-gradient opacity-85"></div>
+        <div className="absolute inset-0 z-0 hero-gradient">
+          {/* Background pattern */}
+          <div className="educational-pattern opacity-20"></div>
         </div>
         
         <div className="relative z-10 container mx-auto px-4 text-center text-white">

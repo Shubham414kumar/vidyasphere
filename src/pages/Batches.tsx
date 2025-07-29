@@ -19,128 +19,170 @@ const Batches = () => {
   const batches = [
     {
       id: 1,
-      title: "JEE Main Preparation",
-      description: "Complete preparation for JEE Main with mock tests, doubt clearing sessions, and expert guidance",
-      price: "₹2,999",
-      originalPrice: "₹4,999",
+      title: "1st Semester - Engineering Mathematics & Physics",
+      description: "Complete coverage of Mathematics-I, Applied Physics, and Engineering Graphics for BEU first semester",
+      price: "₹1,499",
+      originalPrice: "₹2,499",
       duration: "6 months",
-      level: "Engineering",
-      students: 156,
+      level: "1st Semester",
+      students: 124,
       rating: 4.8,
       features: [
-        "Live interactive classes",
-        "Recorded video lectures",
-        "Weekly mock tests",
-        "Doubt clearing sessions",
-        "Study materials & notes",
-        "Performance analytics"
+        "Engineering Mathematics-I",
+        "Applied Physics Lab",
+        "Engineering Graphics",
+        "Basic Electrical Engineering",
+        "Workshop Practice",
+        "Previous year papers"
       ],
-      instructor: "Shubham Kumar",
+      instructor: "BEU Faculty",
       status: "Enrollment Open"
     },
     {
       id: 2,
-      title: "Class 12th Board Prep",
-      description: "Comprehensive Class 12 board exam preparation covering all subjects with previous year questions",
-      price: "₹1,999",
-      originalPrice: "₹3,499",
-      duration: "4 months",
-      level: "12th Grade",
-      students: 234,
+      title: "2nd Semester - Chemistry & Programming",
+      description: "Engineering Chemistry, Programming in C, and Mathematics-II specially designed for BEU students",
+      price: "₹1,499",
+      originalPrice: "₹2,499",
+      duration: "6 months",
+      level: "2nd Semester",
+      students: 98,
       rating: 4.9,
       features: [
-        "Subject-wise preparation",
-        "Board exam strategies",
-        "Previous year questions",
-        "Sample papers",
-        "Revision sessions",
-        "Expert tips & tricks"
+        "Engineering Chemistry",
+        "Programming in C",
+        "Mathematics-II",
+        "Basic Electronics",
+        "Environmental Studies",
+        "Lab practicals included"
       ],
-      instructor: "Expert Faculty",
+      instructor: "BEU Faculty",
       status: "Enrollment Open"
     },
     {
       id: 3,
-      title: "Class 10th Excellence",
-      description: "Score high in Class 10 board examinations with our comprehensive study plan and expert guidance",
-      price: "₹1,499",
-      originalPrice: "₹2,999",
-      duration: "3 months",
-      level: "10th Grade",
-      students: 189,
+      title: "3rd Semester - Core Engineering Subjects",
+      description: "Data Structures, Digital Electronics, and Engineering subjects as per BEU curriculum",
+      price: "₹1,699",
+      originalPrice: "₹2,799",
+      duration: "6 months",
+      level: "3rd Semester",
+      students: 156,
       rating: 4.7,
       features: [
-        "All subjects covered",
-        "Chapter-wise tests",
-        "Board exam preparation",
-        "Time management skills",
-        "Practical guidance",
-        "Parent-teacher meetings"
+        "Data Structures & Algorithms",
+        "Digital Logic Design",
+        "Network Theory",
+        "Engineering Mechanics",
+        "Material Science",
+        "Assignment solutions"
       ],
-      instructor: "Experienced Teachers",
+      instructor: "BEU Faculty",
       status: "Enrollment Open"
     },
     {
       id: 4,
-      title: "NEET Preparation",
-      description: "Medical entrance exam preparation with focus on Biology, Chemistry, and Physics",
-      price: "₹3,499",
-      originalPrice: "₹5,999",
-      duration: "8 months",
-      level: "Medical",
-      students: 98,
-      rating: 4.9,
+      title: "4th Semester - Advanced Programming & Systems",
+      description: "Object Oriented Programming, Computer Organization, and Mathematics-III for BEU students",
+      price: "₹1,699",
+      originalPrice: "₹2,799",
+      duration: "6 months",
+      level: "4th Semester",
+      students: 134,
+      rating: 4.8,
       features: [
-        "NCERT-based curriculum",
-        "Medical exam strategies",
-        "Subject-wise tests",
-        "Biology lab sessions",
-        "Chemistry practicals",
-        "Physics problem solving"
+        "Object Oriented Programming",
+        "Computer Organization",
+        "Mathematics-III",
+        "Electronic Devices",
+        "Engineering Economics",
+        "Mini project guidance"
       ],
-      instructor: "Medical Experts",
-      status: "Starting Soon"
+      instructor: "BEU Faculty",
+      status: "Enrollment Open"
     },
     {
       id: 5,
-      title: "Competitive Exam Prep",
-      description: "Preparation for various competitive exams including SSC, Banking, and Government jobs",
-      price: "₹1,799",
+      title: "5th Semester - Software Engineering & DBMS",
+      description: "Database Management Systems, Software Engineering, and core computer science subjects",
+      price: "₹1,899",
       originalPrice: "₹2,999",
-      duration: "5 months",
-      level: "Competitive",
-      students: 145,
-      rating: 4.6,
+      duration: "6 months",
+      level: "5th Semester",
+      students: 89,
+      rating: 4.9,
       features: [
-        "Current affairs updates",
-        "Quantitative aptitude",
-        "Reasoning & logic",
-        "English proficiency",
-        "General knowledge",
-        "Interview preparation"
+        "Database Management Systems",
+        "Software Engineering",
+        "Computer Networks",
+        "Theory of Computation",
+        "Microprocessor & Interfacing",
+        "Project work guidance"
       ],
-      instructor: "Competition Experts",
+      instructor: "BEU Faculty",
       status: "Enrollment Open"
     },
     {
       id: 6,
-      title: "Foundation Course",
-      description: "Strong foundation building for students in Class 8th and 9th for future success",
-      price: "₹999",
-      originalPrice: "₹1,999",
-      duration: "4 months",
-      level: "Foundation",
-      students: 167,
+      title: "6th Semester - Advanced Computer Science",
+      description: "Operating Systems, Compiler Design, and advanced topics as per BEU syllabus",
+      price: "₹1,899",
+      originalPrice: "₹2,999",
+      duration: "6 months",
+      level: "6th Semester",
+      students: 76,
       rating: 4.8,
       features: [
-        "Concept building",
-        "Interactive learning",
-        "Fun activities",
-        "Regular assessments",
-        "Parent updates",
-        "Career guidance"
+        "Operating Systems",
+        "Compiler Design",
+        "Computer Graphics",
+        "Artificial Intelligence",
+        "Web Technologies",
+        "Industry projects"
       ],
-      instructor: "Foundation Specialists",
+      instructor: "BEU Faculty",
+      status: "Enrollment Open"
+    },
+    {
+      id: 7,
+      title: "7th Semester - Specialization & Electives",
+      description: "Machine Learning, Cyber Security, and elective subjects preparation for BEU final year",
+      price: "₹2,099",
+      originalPrice: "₹3,299",
+      duration: "6 months",
+      level: "7th Semester",
+      students: 67,
+      rating: 4.9,
+      features: [
+        "Machine Learning",
+        "Cyber Security",
+        "Mobile Application Development",
+        "Cloud Computing",
+        "Elective subjects",
+        "Placement preparation"
+      ],
+      instructor: "BEU Faculty",
+      status: "Enrollment Open"
+    },
+    {
+      id: 8,
+      title: "8th Semester - Final Year Project & Placement",
+      description: "Major project guidance, placement preparation, and final semester subjects for BEU students",
+      price: "₹2,099",
+      originalPrice: "₹3,299",
+      duration: "6 months",
+      level: "8th Semester",
+      students: 45,
+      rating: 4.9,
+      features: [
+        "Major Project Guidance",
+        "Placement Training",
+        "Industrial Training",
+        "Technical Interview Prep",
+        "Resume Building",
+        "Final exam preparation"
+      ],
+      instructor: "BEU Faculty & Industry Experts",
       status: "Enrollment Open"
     }
   ];
@@ -153,10 +195,10 @@ const Batches = () => {
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl font-bold mb-6">Expert Batches</h1>
+            <h1 className="text-5xl font-bold mb-6">BEU Semester Batches</h1>
             <p className="text-xl text-muted-foreground leading-relaxed">
-              Join our carefully designed batches with expert instructors and comprehensive study materials. 
-              Choose the perfect batch for your academic goals and start your journey to success.
+              Complete semester-wise preparation for Bihar Engineering University (BEU) students. 
+              Join our specialized batches covering all 8 semesters of your 4-year engineering program.
             </p>
           </div>
         </div>
@@ -269,9 +311,9 @@ const Batches = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold mb-4">Why Choose Our Batches?</h2>
+              <h2 className="text-4xl font-bold mb-4">Why Choose Our BEU Batches?</h2>
               <p className="text-xl text-muted-foreground">
-                We provide more than just courses - we provide a complete learning experience
+                Specifically designed for Bihar Engineering University curriculum and syllabus
               </p>
             </div>
             

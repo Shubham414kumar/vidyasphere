@@ -16,16 +16,32 @@ import {
 } from "lucide-react";
 
 const Batches = () => {
+  // All Engineering Branches offered at BEU
+  const engineeringBranches = [
+    { code: "CE", name: "Civil Engineering", seats: 60 },
+    { code: "ME", name: "Mechanical Engineering", seats: 60 },
+    { code: "EE", name: "Electrical Engineering", seats: 60 },
+    { code: "ECE", name: "Electronics & Communication Engineering", seats: 60 },
+    { code: "CSE", name: "Computer Science & Engineering", seats: 120 },
+    { code: "IT", name: "Information Technology", seats: 60 },
+    { code: "CHE", name: "Chemical Engineering", seats: 30 },
+    { code: "BT", name: "Biotechnology", seats: 30 },
+    { code: "AE", name: "Aeronautical Engineering", seats: 30 },
+    { code: "EN", name: "Environmental Engineering", seats: 30 },
+    { code: "PE", name: "Production Engineering", seats: 30 },
+    { code: "IE", name: "Industrial Engineering", seats: 30 },
+  ];
+
   const batches = [
     {
       id: 1,
-      title: "1st Semester - Engineering Mathematics & Physics",
-      description: "Complete coverage of Mathematics-I, Applied Physics, and Engineering Graphics for BEU first semester",
+      title: "1st Semester - Foundation Engineering (All Branches)",
+      description: "Complete coverage of Mathematics-I, Applied Physics, and Engineering Graphics for all BEU engineering branches",
       price: "₹1,499",
       originalPrice: "₹2,499",
       duration: "6 months",
       level: "1st Semester",
-      students: 124,
+      students: 570, // Total across all branches
       rating: 4.8,
       features: [
         "Engineering Mathematics-I",
@@ -33,20 +49,21 @@ const Batches = () => {
         "Engineering Graphics",
         "Basic Electrical Engineering",
         "Workshop Practice",
-        "Previous year papers"
+        "All 12 Engineering Branches Covered"
       ],
       instructor: "BEU Faculty",
-      status: "Enrollment Open"
+      status: "Enrollment Open",
+      branches: "CE, ME, EE, ECE, CSE, IT, CHE, BT, AE, EN, PE, IE"
     },
     {
       id: 2,
-      title: "2nd Semester - Chemistry & Programming",
-      description: "Engineering Chemistry, Programming in C, and Mathematics-II specially designed for BEU students",
+      title: "2nd Semester - Chemistry & Programming (All Branches)",
+      description: "Engineering Chemistry, Programming in C, and Mathematics-II for all BEU engineering branches",
       price: "₹1,499",
       originalPrice: "₹2,499",
       duration: "6 months",
       level: "2nd Semester",
-      students: 98,
+      students: 565,
       rating: 4.9,
       features: [
         "Engineering Chemistry",
@@ -54,136 +71,143 @@ const Batches = () => {
         "Mathematics-II",
         "Basic Electronics",
         "Environmental Studies",
-        "Lab practicals included"
+        "All 12 Engineering Branches Covered"
       ],
       instructor: "BEU Faculty",
-      status: "Enrollment Open"
+      status: "Enrollment Open",
+      branches: "CE, ME, EE, ECE, CSE, IT, CHE, BT, AE, EN, PE, IE"
     },
     {
       id: 3,
-      title: "3rd Semester - Core Engineering Subjects",
-      description: "Data Structures, Digital Electronics, and Engineering subjects as per BEU curriculum",
+      title: "3rd Semester - Branch Specialization Begins",
+      description: "Branch-specific subjects for CE, ME, EE, ECE, CSE, IT, CHE, BT, AE, EN, PE, IE",
       price: "₹1,699",
       originalPrice: "₹2,799",
       duration: "6 months",
       level: "3rd Semester",
-      students: 156,
+      students: 560,
       rating: 4.7,
       features: [
-        "Data Structures & Algorithms",
-        "Digital Logic Design",
-        "Network Theory",
-        "Engineering Mechanics",
+        "Data Structures (CSE/IT)",
+        "Strength of Materials (CE/ME)",
+        "Network Analysis (EE/ECE)", 
+        "Thermodynamics (ME/CHE)",
         "Material Science",
-        "Assignment solutions"
+        "Branch-specific Lab Work"
       ],
       instructor: "BEU Faculty",
-      status: "Enrollment Open"
+      status: "Enrollment Open",
+      branches: "CE, ME, EE, ECE, CSE, IT, CHE, BT, AE, EN, PE, IE"
     },
     {
       id: 4,
-      title: "4th Semester - Advanced Programming & Systems",
-      description: "Object Oriented Programming, Computer Organization, and Mathematics-III for BEU students",
+      title: "4th Semester - Core Branch Subjects",
+      description: "Advanced branch-specific subjects for all BEU engineering disciplines",
       price: "₹1,699",
       originalPrice: "₹2,799",
       duration: "6 months",
       level: "4th Semester",
-      students: 134,
+      students: 555,
       rating: 4.8,
       features: [
-        "Object Oriented Programming",
-        "Computer Organization",
-        "Mathematics-III",
-        "Electronic Devices",
-        "Engineering Economics",
-        "Mini project guidance"
+        "OOP (CSE/IT)",
+        "RCC Design (CE)",
+        "Machine Design (ME/PE)",
+        "Control Systems (EE)",
+        "Digital Communication (ECE)",
+        "Chemical Process Calculations (CHE)"
       ],
       instructor: "BEU Faculty",
-      status: "Enrollment Open"
+      status: "Enrollment Open",
+      branches: "CE, ME, EE, ECE, CSE, IT, CHE, BT, AE, EN, PE, IE"
     },
     {
       id: 5,
-      title: "5th Semester - Software Engineering & DBMS",
-      description: "Database Management Systems, Software Engineering, and core computer science subjects",
+      title: "5th Semester - Advanced Engineering Concepts",
+      description: "Specialized subjects for CE, ME, EE, ECE, CSE, IT, CHE, BT, AE, EN, PE, IE branches",
       price: "₹1,899",
       originalPrice: "₹2,999",
       duration: "6 months",
       level: "5th Semester",
-      students: 89,
+      students: 550,
       rating: 4.9,
       features: [
-        "Database Management Systems",
-        "Software Engineering",
-        "Computer Networks",
-        "Theory of Computation",
-        "Microprocessor & Interfacing",
-        "Project work guidance"
+        "DBMS (CSE/IT)",
+        "Geotechnical Engineering (CE)",
+        "Heat Transfer (ME/CHE)",
+        "Power Electronics (EE)",
+        "Microprocessors (ECE)",
+        "Bioprocess Engineering (BT)"
       ],
       instructor: "BEU Faculty",
-      status: "Enrollment Open"
+      status: "Enrollment Open",
+      branches: "CE, ME, EE, ECE, CSE, IT, CHE, BT, AE, EN, PE, IE"
     },
     {
       id: 6,
-      title: "6th Semester - Advanced Computer Science",
-      description: "Operating Systems, Compiler Design, and advanced topics as per BEU syllabus",
+      title: "6th Semester - Industry Applications",
+      description: "Industry-oriented subjects for all BEU engineering branches",
       price: "₹1,899",
       originalPrice: "₹2,999",
       duration: "6 months",
       level: "6th Semester",
-      students: 76,
+      students: 545,
       rating: 4.8,
       features: [
-        "Operating Systems",
-        "Compiler Design",
-        "Computer Graphics",
-        "Artificial Intelligence",
-        "Web Technologies",
-        "Industry projects"
+        "Software Engineering (CSE/IT)",
+        "Transportation Engineering (CE)",
+        "Manufacturing Technology (ME/PE)",
+        "Power Systems (EE)",
+        "VLSI Design (ECE)",
+        "Chemical Reaction Engineering (CHE)"
       ],
       instructor: "BEU Faculty",
-      status: "Enrollment Open"
+      status: "Enrollment Open",
+      branches: "CE, ME, EE, ECE, CSE, IT, CHE, BT, AE, EN, PE, IE"
     },
     {
       id: 7,
-      title: "7th Semester - Specialization & Electives",
-      description: "Machine Learning, Cyber Security, and elective subjects preparation for BEU final year",
+      title: "7th Semester - Electives & Specialization",
+      description: "Advanced electives and specialization subjects for all BEU engineering branches",
       price: "₹2,099",
       originalPrice: "₹3,299",
       duration: "6 months",
       level: "7th Semester",
-      students: 67,
+      students: 540,
       rating: 4.9,
       features: [
-        "Machine Learning",
-        "Cyber Security",
-        "Mobile Application Development",
-        "Cloud Computing",
-        "Elective subjects",
-        "Placement preparation"
+        "Machine Learning (CSE/IT)",
+        "Advanced Structural Design (CE)",
+        "Automation & Robotics (ME/EE)",
+        "Embedded Systems (ECE)",
+        "Process Design (CHE)",
+        "Placement Preparation"
       ],
       instructor: "BEU Faculty",
-      status: "Enrollment Open"
+      status: "Enrollment Open",
+      branches: "CE, ME, EE, ECE, CSE, IT, CHE, BT, AE, EN, PE, IE"
     },
     {
       id: 8,
       title: "8th Semester - Final Year Project & Placement",
-      description: "Major project guidance, placement preparation, and final semester subjects for BEU students",
+      description: "Major project guidance and placement preparation for all BEU engineering branches",
       price: "₹2,099",
       originalPrice: "₹3,299",
       duration: "6 months",
       level: "8th Semester",
-      students: 45,
+      students: 535,
       rating: 4.9,
       features: [
         "Major Project Guidance",
-        "Placement Training",
-        "Industrial Training",
-        "Technical Interview Prep",
+        "Technical Interview Preparation",
+        "Industry Training",
         "Resume Building",
-        "Final exam preparation"
+        "Campus Placement Training",
+        "Final Examination Prep"
       ],
       instructor: "BEU Faculty & Industry Experts",
-      status: "Enrollment Open"
+      status: "Enrollment Open",
+      branches: "CE, ME, EE, ECE, CSE, IT, CHE, BT, AE, EN, PE, IE"
     }
   ];
 
@@ -302,6 +326,49 @@ const Batches = () => {
                 </CardContent>
               </Card>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* BEU Engineering Branches */}
+      <section className="py-20 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold mb-4">All Engineering Branches at BEU</h2>
+              <p className="text-xl text-muted-foreground">
+                Bihar Engineering University offers 12 diverse engineering branches across its affiliated colleges
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {engineeringBranches.map((branch, index) => (
+                <Card key={index} className="hover:shadow-lg transition-all duration-300 bg-white/70 dark:bg-gray-900/70 backdrop-blur-sm">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="text-2xl font-bold text-primary">{branch.code}</div>
+                      <Badge variant="secondary">{branch.seats} seats</Badge>
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2">{branch.name}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Available in all semester batches from 1st to 8th semester
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            <div className="text-center mt-12">
+              <div className="inline-flex items-center gap-4 p-4 bg-primary/10 rounded-lg">
+                <Users className="h-6 w-6 text-primary" />
+                <div>
+                  <div className="text-sm font-medium">Total Seats Available</div>
+                  <div className="text-2xl font-bold text-primary">
+                    {engineeringBranches.reduce((total, branch) => total + branch.seats, 0)} seats per year
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

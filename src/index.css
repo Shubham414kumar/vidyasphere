@@ -116,13 +116,3 @@
     background-size: 20px 20px;
   }
 }
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground;
-  }
-}

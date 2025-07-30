@@ -48,6 +48,16 @@
     /* Educational Typography */
     --font-heading: 'Inter', system-ui, sans-serif;
     --font-body: 'Inter', system-ui, sans-serif;
+
+    /* Sidebar Variables */
+    --sidebar-background: 220 13% 91%;
+    --sidebar-foreground: 210 22% 20%;
+    --sidebar-primary: 214 67% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 142 76% 36%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 214 67% 45%;
   }
 
   .dark {

@@ -71,9 +71,7 @@
     --input: 217 33% 18%;
     --ring: 214 67% 65%;
   }
-}
 
-@layer base {
   * {
     border-color: hsl(var(--border));
   }

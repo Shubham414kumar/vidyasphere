@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -8,20 +8,31 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { UserPlus, ArrowLeft, Smartphone } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const SignUp = () => {
-  const [step, setStep] = useState<"details" | "otp">("details");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
-    grade: ""
+    grade: "",
+    password: "",
+    confirmPassword: ""
   });
-  const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [canResendOTP, setCanResendOTP] = useState(false);
-  const [countdown, setCountdown] = useState(0);
   const { toast } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if user is already logged in
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate('/');
+      }
+    };
+    checkUser();
+  }, [navigate]);
 
   const formatPhoneNumber = (value: string) => {
     const digits = value.replace(/\D/g, "");
@@ -74,79 +85,85 @@ const SignUp = () => {
       });
       return false;
     }
+
+    if (formData.password.length < 6) {
+      toast({
+        title: "Password Too Short",
+        description: "Password must be at least 6 characters long",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      toast({
+        title: "Passwords Don't Match",
+        description: "Please make sure both passwords are the same",
+        variant: "destructive",
+      });
+      return false;
+    }
     
     return true;
   };
 
-  const handleSendOTP = async () => {
+  const handleSignUp = async () => {
     if (!validateForm()) return;
 
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      setStep("otp");
-      startCountdown();
-      toast({
-        title: "OTP Sent",
-        description: `Verification code sent to +91 ${formData.phone}`,
-      });
-    }, 2000);
-  };
-
-  const startCountdown = () => {
-    setCanResendOTP(false);
-    setCountdown(30);
-    
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          setCanResendOTP(true);
-          return 0;
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            full_name: formData.name,
+            phone: formData.phone,
+            grade: formData.grade,
+          }
         }
-        return prev - 1;
       });
-    }, 1000);
-  };
 
-  const handleVerifyOTP = async () => {
-    if (otp.length !== 6) {
+      if (error) {
+        toast({
+          title: "Sign Up Failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        // Create profile record
+        if (data.user) {
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .insert({
+              user_id: data.user.id,
+              full_name: formData.name,
+              phone: formData.phone,
+              grade: formData.grade,
+            });
+
+          if (profileError) {
+            console.error('Profile creation error:', profileError);
+          }
+        }
+
+        toast({
+          title: "Account Created Successfully",
+          description: "Welcome to VidyaSphere! Please check your email to verify your account.",
+        });
+        navigate('/login');
+      }
+    } catch (error) {
       toast({
-        title: "Invalid OTP",
-        description: "Please enter the complete 6-digit OTP",
+        title: "Error",
+        description: "Something went wrong. Please try again.",
         variant: "destructive",
       });
-      return;
-    }
-
-    setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
+    } finally {
       setIsLoading(false);
-      toast({
-        title: "Account Created Successfully",
-        description: "Welcome to VidyaSphere! Your account has been created.",
-      });
-      // Redirect logic would go here
-    }, 2000);
-  };
-
-  const handleResendOTP = () => {
-    if (!canResendOTP) return;
-    
-    startCountdown();
-    toast({
-      title: "OTP Resent",
-      description: `New verification code sent to +91 ${formData.phone}`,
-    });
-  };
-
-  const goBack = () => {
-    setStep("details");
-    setOtp("");
+    }
   };
 
   return (
@@ -159,147 +176,107 @@ const SignUp = () => {
             <Card className="card-shadow">
               <CardHeader className="text-center">
                 <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                  {step === "details" ? (
-                    <UserPlus className="h-8 w-8 text-primary-foreground" />
-                  ) : (
-                    <Smartphone className="h-8 w-8 text-primary-foreground" />
-                  )}
+                  <UserPlus className="h-8 w-8 text-primary-foreground" />
                 </div>
                 <CardTitle className="text-2xl">
-                  {step === "details" ? "Create Account" : "Verify Phone"}
+                  Create Account
                 </CardTitle>
                 <CardDescription>
-                  {step === "details" 
-                    ? "Join VidyaSphere and start your learning journey"
-                    : `Enter the 6-digit code sent to +91 ${formData.phone}`
-                  }
+                  Join VidyaSphere and start your learning journey
                 </CardDescription>
               </CardHeader>
               
               <CardContent className="space-y-4">
-                {step === "details" ? (
-                  <>
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Full Name</Label>
-                      <Input
-                        id="name"
-                        type="text"
-                        placeholder="Enter your full name"
-                        value={formData.name}
-                        onChange={(e) => handleInputChange("name", e.target.value)}
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email Address</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="your.email@example.com"
-                        value={formData.email}
-                        onChange={(e) => handleInputChange("email", e.target.value)}
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Mobile Number</Label>
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-                          +91
-                        </span>
-                        <Input
-                          id="phone"
-                          type="tel"
-                          placeholder="9876543210"
-                          value={formData.phone}
-                          onChange={(e) => handleInputChange("phone", e.target.value)}
-                          className="pl-12"
-                          maxLength={10}
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="grade">Current Grade/Level</Label>
-                      <select
-                        id="grade"
-                        value={formData.grade}
-                        onChange={(e) => handleInputChange("grade", e.target.value)}
-                        className="w-full px-3 py-2 border border-input rounded-md"
-                      >
-                        <option value="">Select your grade/level</option>
-                        <option value="class-8">Class 8th</option>
-                        <option value="class-9">Class 9th</option>
-                        <option value="class-10">Class 10th</option>
-                        <option value="class-11">Class 11th</option>
-                        <option value="class-12">Class 12th</option>
-                        <option value="engineering">Engineering Student</option>
-                        <option value="competitive">Competitive Exam Aspirant</option>
-                        <option value="other">Other</option>
-                      </select>
-                    </div>
-                    
-                    <Button 
-                      onClick={handleSendOTP}
-                      disabled={isLoading}
-                      className="w-full"
-                      size="lg"
-                    >
-                      {isLoading ? "Creating Account..." : "Create Account"}
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <div className="space-y-2">
-                      <Label htmlFor="otp">Verification Code</Label>
-                      <Input
-                        id="otp"
-                        type="text"
-                        placeholder="123456"
-                        value={otp}
-                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                        className="text-center text-lg tracking-widest"
-                        maxLength={6}
-                      />
-                    </div>
-                    
-                    <Button 
-                      onClick={handleVerifyOTP}
-                      disabled={isLoading || otp.length !== 6}
-                      className="w-full"
-                      size="lg"
-                    >
-                      {isLoading ? "Verifying..." : "Verify & Complete Signup"}
-                    </Button>
-                    
-                    <div className="text-center space-y-2">
-                      <Button
-                        variant="ghost"
-                        onClick={goBack}
-                        className="text-sm"
-                      >
-                        <ArrowLeft className="h-4 w-4 mr-1" />
-                        Edit Details
-                      </Button>
-                      
-                      <div>
-                        {canResendOTP ? (
-                          <Button
-                            variant="link"
-                            onClick={handleResendOTP}
-                            className="text-sm"
-                          >
-                            Resend OTP
-                          </Button>
-                        ) : (
-                          <span className="text-sm text-muted-foreground">
-                            Resend OTP in {countdown}s
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </>
-                )}
+                <div className="space-y-2">
+                  <Label htmlFor="name">Full Name</Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="Enter your full name"
+                    value={formData.name}
+                    onChange={(e) => handleInputChange("name", e.target.value)}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="your.email@example.com"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Mobile Number</Label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
+                      +91
+                    </span>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="9876543210"
+                      value={formData.phone}
+                      onChange={(e) => handleInputChange("phone", e.target.value)}
+                      className="pl-12"
+                      maxLength={10}
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="grade">Current Grade/Level</Label>
+                  <select
+                    id="grade"
+                    value={formData.grade}
+                    onChange={(e) => handleInputChange("grade", e.target.value)}
+                    className="w-full px-3 py-2 border border-input rounded-md"
+                  >
+                    <option value="">Select your grade/level</option>
+                    <option value="class-8">Class 8th</option>
+                    <option value="class-9">Class 9th</option>
+                    <option value="class-10">Class 10th</option>
+                    <option value="class-11">Class 11th</option>
+                    <option value="class-12">Class 12th</option>
+                    <option value="engineering">Engineering Student</option>
+                    <option value="competitive">Competitive Exam Aspirant</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    value={formData.password}
+                    onChange={(e) => handleInputChange("password", e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="Confirm your password"
+                    value={formData.confirmPassword}
+                    onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
+                  />
+                </div>
+                
+                <Button 
+                  onClick={handleSignUp}
+                  disabled={isLoading}
+                  className="w-full"
+                  size="lg"
+                >
+                  {isLoading ? "Creating Account..." : "Create Account"}
+                </Button>
                 
                 <div className="text-center pt-4 border-t">
                   <p className="text-sm text-muted-foreground">
@@ -310,18 +287,16 @@ const SignUp = () => {
                   </p>
                 </div>
                 
-                {step === "details" && (
-                  <p className="text-xs text-muted-foreground text-center leading-relaxed">
-                    By creating an account, you agree to our{" "}
-                    <Link to="/terms" className="text-primary hover:underline">
-                      Terms of Service
-                    </Link>{" "}
-                    and{" "}
-                    <Link to="/privacy" className="text-primary hover:underline">
-                      Privacy Policy
-                    </Link>
-                  </p>
-                )}
+                <p className="text-xs text-muted-foreground text-center leading-relaxed">
+                  By creating an account, you agree to our{" "}
+                  <Link to="/terms" className="text-primary hover:underline">
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
+                  <Link to="/privacy" className="text-primary hover:underline">
+                    Privacy Policy
+                  </Link>
+                </p>
               </CardContent>
             </Card>
           </div>

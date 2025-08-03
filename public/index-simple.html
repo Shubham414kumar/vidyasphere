@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidyaSphere - Educational Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+        
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+        
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+            margin-top: 60px;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin: 0 0.5rem;
+            transition: transform 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .features {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #333;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .batches {
+            background: #f8f9fa;
+            padding: 4rem 2rem;
+        }
+        
+        .batches-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .batches-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+        
+        .batch-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .batch-price {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        
+        .footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .contact-section {
+            padding: 4rem 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .contact-item {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">🎓 VidyaSphere</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#batches">Batches</a></li>
+                <li><a href="#notes">Notes</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <h1>Welcome to <span style="color: #ffd700;">VidyaSphere</span></h1>
+        <p>Your comprehensive platform for Engineering, 10th, and 12th education. Learn, grow, and excel with our expert guidance and comprehensive resources.</p>
+        <a href="#batches" class="btn">Explore Batches</a>
+        <a href="#notes" class="btn">Browse Notes</a>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="about">
+        <h2 class="section-title">Why Choose VidyaSphere?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📚</div>
+                <h3>Complete Study Material</h3>
+                <p>Comprehensive notes, videos, and practice materials for all subjects covering Engineering, 10th, and 12th grade curricula.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">👨‍🏫</div>
+                <h3>Expert Instructors</h3>
+                <p>Learn from experienced teachers and industry professionals who provide personalized guidance and mentorship.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3>Interactive Learning</h3>
+                <p>Engage with interactive content, live sessions, and collaborative learning tools designed for modern education.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Progress Tracking</h3>
+                <p>Monitor your academic progress with detailed analytics, performance insights, and personalized recommendations.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🏆</div>
+                <h3>Exam Preparation</h3>
+                <p>Access previous year questions, mock tests, and exam strategies to ace your academic assessments.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💬</div>
+                <h3>Doubt Support</h3>
+                <p>Get instant doubt resolution through our dedicated support system and peer-to-peer learning community.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Batches Section -->
+    <section class="batches" id="batches">
+        <div class="batches-content">
+            <h2 class="section-title">Popular Batches</h2>
+            <div class="batches-grid">
+                <div class="batch-card">
+                    <div class="batch-price">₹2,999</div>
+                    <h3>BEU 1st Semester</h3>
+                    <p>Complete preparation for 1st semester with live classes, notes, and doubt support.</p>
+                    <ul style="text-align: left; margin: 1rem 0;">
+                        <li>✓ Live Interactive Classes</li>
+                        <li>✓ Complete Study Material</li>
+                        <li>✓ Mock Tests & PYQs</li>
+                        <li>✓ 24/7 Doubt Support</li>
+                    </ul>
+                    <a href="#" class="btn" style="display: block; text-align: center; margin-top: 1rem;">Enroll Now</a>
+                </div>
+                <div class="batch-card">
+                    <div class="batch-price">₹3,499</div>
+                    <h3>BEU 2nd Semester</h3>
+                    <p>Advanced concepts and practical sessions for 2nd semester success.</p>
+                    <ul style="text-align: left; margin: 1rem 0;">
+                        <li>✓ Advanced Problem Solving</li>
+                        <li>✓ Practical Lab Sessions</li>
+                        <li>✓ Industry Expert Sessions</li>
+                        <li>✓ Career Guidance</li>
+                    </ul>
+                    <a href="#" class="btn" style="display: block; text-align: center; margin-top: 1rem;">Enroll Now</a>
+                </div>
+                <div class="batch-card">
+                    <div class="batch-price">₹1,999</div>
+                    <h3>Class 12th CBSE</h3>
+                    <p>Complete board exam preparation with expert guidance and proven strategies.</p>
+                    <ul style="text-align: left; margin: 1rem 0;">
+                        <li>✓ Board Exam Strategy</li>
+                        <li>✓ Important Questions</li>
+                        <li>✓ Sample Papers</li>
+                        <li>✓ Revision Sessions</li>
+                    </ul>
+                    <a href="#" class="btn" style="display: block; text-align: center; margin-top: 1rem;">Enroll Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="contact">
+        <h2 class="section-title">Get in Touch</h2>
+        <p>Have questions? We're here to help you succeed in your academic journey.</p>
+        <div class="contact-info">
+            <div class="contact-item">
+                <h3>📞 Phone Support</h3>
+                <p>+91 9546805580</p>
+                <p>Available 9 AM - 9 PM</p>
+            </div>
+            <div class="contact-item">
+                <h3>✉️ Email Support</h3>
+                <p>shubham.cse.beu@gmail.com</p>
+                <p>Response within 24 hours</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 VidyaSphere. All rights reserved. | Made with ❤️ for students</p>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all cards and sections
+        document.querySelectorAll('.feature-card, .batch-card, .contact-item').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

@@ -1,23 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>vidyasphere</title>
-    <meta name="description" content="Lovable Generated Project" />
-    <meta name="author" content="Lovable" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidyaSphere - Educational Platform</title>
+    <link rel="stylesheet" href="public/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h2>VidyaSphere</h2>
+            </div>
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="#home" class="nav-item" onclick="showPage('home')">Home</a></li>
+                <li><a href="#about" class="nav-item" onclick="showPage('about')">About</a></li>
+                <li><a href="#batches" class="nav-item" onclick="showPage('batches')">Batches</a></li>
+                <li><a href="#notes" class="nav-item" onclick="showPage('notes')">Notes</a></li>
+                <li><a href="#contact" class="nav-item" onclick="showPage('contact')">Contact</a></li>
+            </ul>
+            <div class="auth-buttons">
+                <button class="btn-secondary" onclick="showPage('login')">Login</button>
+                <button class="btn-primary" onclick="showPage('signup')">Sign Up</button>
+            </div>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
 
-    <meta property="og:title" content="VidyaSphere" />
-    <meta property="og:description" content="Lovable Generated Project" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <!-- Home Page -->
+    <div id="home" class="page active">
+        <section class="hero gradient-bg">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Welcome to VidyaSphere</h1>
+                    <p>Your comprehensive platform for Engineering, 10th, and 12th grade education. Access quality resources, join interactive batches, and excel in your academic journey.</p>
+                    <div class="hero-buttons">
+                        <button class="btn-primary" onclick="showPage('batches')">Explore Batches</button>
+                        <button class="btn-secondary" onclick="showPage('notes')">View Notes</button>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+        <section class="features">
+            <div class="container">
+                <h2 class="section-title">Why Choose VidyaSphere?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-graduation-cap feature-icon"></i>
+                        <h3>Quality Education</h3>
+                        <p>Expert-designed curriculum with comprehensive study materials.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-users feature-icon"></i>
+                        <h3>Interactive Batches</h3>
+                        <p>Join live sessions with experienced teachers.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-book feature-icon"></i>
+                        <h3>Extensive Notes</h3>
+                        <p>Access detailed notes curated by subject experts.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- About Page -->
+    <div id="about" class="page">
+        <section class="page-hero">
+            <div class="container">
+                <h1>About VidyaSphere</h1>
+                <p>Empowering students with quality education</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- Other pages... -->
+    <div id="batches" class="page">
+        <section class="page-hero">
+            <div class="container">
+                <h1>Our Batches</h1>
+                <p>Choose from comprehensive courses</p>
+            </div>
+        </section>
+    </div>
+
+    <div id="notes" class="page">
+        <section class="page-hero">
+            <div class="container">
+                <h1>Study Notes</h1>
+                <p>Access comprehensive notes</p>
+            </div>
+        </section>
+    </div>
+
+    <div id="contact" class="page">
+        <section class="page-hero">
+            <div class="container">
+                <h1>Contact Us</h1>
+                <p>Get in touch with our team</p>
+            </div>
+        </section>
+    </div>
+
+    <div id="login" class="page">
+        <section class="auth-section">
+            <div class="auth-form">
+                <h2>Login to VidyaSphere</h2>
+                <form>
+                    <div class="form-group">
+                        <input type="email" placeholder="Email Address" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Login</button>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <div id="signup" class="page">
+        <section class="auth-section">
+            <div class="auth-form">
+                <h2>Join VidyaSphere</h2>
+                <form>
+                    <div class="form-group">
+                        <input type="text" placeholder="Full Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" placeholder="Email Address" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Create Account</button>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <script src="public/script.js"></script>
+</body>
 </html>

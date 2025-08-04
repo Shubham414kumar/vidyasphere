@@ -4,7 +4,7 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
-  base: '/vidyasphere/', // ✅ Better for Netlify/Vercel if not GitHub Pages
+  base: '/', // Change back to root path
   server: {
     host: "::",
     port: 8080,

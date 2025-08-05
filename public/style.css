@@ -142,6 +142,10 @@ body {
     font-weight: bold;
 }
 
+.hero-content h1 .highlight {
+    color: #ffd700;
+}
+
 .hero-content p {
     font-size: 1.2rem;
     margin-bottom: 2rem;

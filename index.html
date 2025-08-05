@@ -19,11 +19,14 @@
                 <li><a href="#about" class="nav-item" onclick="showPage('about')">About</a></li>
                 <li><a href="#batches" class="nav-item" onclick="showPage('batches')">Batches</a></li>
                 <li><a href="#notes" class="nav-item" onclick="showPage('notes')">Notes</a></li>
+                <li><a href="#pyq" class="nav-item" onclick="showPage('pyq')">PYQ</a></li>
+                <li><a href="#attendance" class="nav-item" onclick="showPage('attendance')">Attendance</a></li>
                 <li><a href="#contact" class="nav-item" onclick="showPage('contact')">Contact</a></li>
             </ul>
             <div class="auth-buttons">
                 <button class="btn-secondary" onclick="showPage('login')">Login</button>
                 <button class="btn-primary" onclick="showPage('signup')">Sign Up</button>
+                <button class="btn-secondary" onclick="showPage('donate')">Donate</button>
             </div>
             <div class="hamburger" id="hamburger">
                 <span></span>
@@ -38,11 +41,11 @@
         <section class="hero gradient-bg">
             <div class="container">
                 <div class="hero-content">
-                    <h1>Welcome to VidyaSphere</h1>
-                    <p>Your comprehensive platform for Engineering, 10th, and 12th grade education. Access quality resources, join interactive batches, and excel in your academic journey.</p>
+                    <h1>Welcome to <span class="highlight">VidyaSphere</span></h1>
+                    <p>Your comprehensive platform for Engineering, 10th, and 12th education. Learn, grow, and excel with our expert guidance and comprehensive resources.</p>
                     <div class="hero-buttons">
                         <button class="btn-primary" onclick="showPage('batches')">Explore Batches</button>
-                        <button class="btn-secondary" onclick="showPage('notes')">View Notes</button>
+                        <button class="btn-secondary" onclick="showPage('notes')">Browse Notes</button>
                     </div>
                 </div>
             </div>
@@ -55,17 +58,32 @@
                     <div class="feature-card">
                         <i class="fas fa-graduation-cap feature-icon"></i>
                         <h3>Quality Education</h3>
-                        <p>Expert-designed curriculum with comprehensive study materials.</p>
+                        <p>Expert-designed curriculum with comprehensive study materials for Engineering, 10th, and 12th grade students.</p>
                     </div>
                     <div class="feature-card">
                         <i class="fas fa-users feature-icon"></i>
                         <h3>Interactive Batches</h3>
-                        <p>Join live sessions with experienced teachers.</p>
+                        <p>Join live sessions with experienced teachers and interact with fellow students in real-time.</p>
                     </div>
                     <div class="feature-card">
                         <i class="fas fa-book feature-icon"></i>
                         <h3>Extensive Notes</h3>
-                        <p>Access detailed notes curated by subject experts.</p>
+                        <p>Access detailed notes, previous year questions, and study materials curated by subject experts.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-chart-line feature-icon"></i>
+                        <h3>Track Progress</h3>
+                        <p>Monitor your attendance, performance, and academic progress with detailed analytics.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-clock feature-icon"></i>
+                        <h3>Flexible Timing</h3>
+                        <p>Learn at your own pace with recorded sessions and flexible batch timings.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-certificate feature-icon"></i>
+                        <h3>Certification</h3>
+                        <p>Get certified upon completion of courses and showcase your achievements.</p>
                     </div>
                 </div>
             </div>
@@ -77,35 +95,360 @@
         <section class="page-hero">
             <div class="container">
                 <h1>About VidyaSphere</h1>
-                <p>Empowering students with quality education</p>
+                <p>Empowering students with quality education since 2020</p>
+            </div>
+        </section>
+        
+        <section class="about-content">
+            <div class="container">
+                <div class="about-section">
+                    <h2>Our Mission</h2>
+                    <p>VidyaSphere is dedicated to providing comprehensive, accessible, and high-quality education for Engineering, 10th, and 12th-grade students. We believe that every student deserves access to excellent educational resources and expert guidance to achieve their academic goals.</p>
+                </div>
+                
+                <div class="about-section">
+                    <h2>What We Offer</h2>
+                    <p>From interactive live sessions to comprehensive study materials, we provide everything students need to excel in their studies. Our platform combines traditional teaching methods with modern technology to create an engaging learning experience.</p>
+                </div>
+                
+                <div class="values-grid">
+                    <div class="value-item">
+                        <i class="fas fa-star"></i>
+                        <h3>Excellence</h3>
+                        <p>We strive for excellence in everything we do, from curriculum design to student support.</p>
+                    </div>
+                    <div class="value-item">
+                        <i class="fas fa-heart"></i>
+                        <h3>Care</h3>
+                        <p>We genuinely care about each student's success and provide personalized attention.</p>
+                    </div>
+                    <div class="value-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <h3>Innovation</h3>
+                        <p>We continuously innovate our teaching methods to make learning more effective and enjoyable.</p>
+                    </div>
+                    <div class="value-item">
+                        <i class="fas fa-handshake"></i>
+                        <h3>Community</h3>
+                        <p>We foster a supportive community where students can learn together and grow.</p>
+                    </div>
+                </div>
             </div>
         </section>
     </div>
 
-    <!-- Other pages... -->
+    <!-- Batches Page -->
     <div id="batches" class="page">
         <section class="page-hero">
             <div class="container">
                 <h1>Our Batches</h1>
-                <p>Choose from comprehensive courses</p>
+                <p>Choose from comprehensive courses designed for your success</p>
+            </div>
+        </section>
+        
+        <section class="batches-content">
+            <div class="container">
+                <div class="batches-filter">
+                    <button class="filter-btn active" onclick="filterBatches('all')">All Courses</button>
+                    <button class="filter-btn" onclick="filterBatches('engineering')">Engineering</button>
+                    <button class="filter-btn" onclick="filterBatches('12th')">12th Grade</button>
+                    <button class="filter-btn" onclick="filterBatches('10th')">10th Grade</button>
+                </div>
+                
+                <div class="batches-grid">
+                    <div class="batch-card" data-category="engineering">
+                        <div class="batch-header">
+                            <span class="batch-badge">Popular</span>
+                        </div>
+                        <h3>JEE Main + Advanced Complete Course</h3>
+                        <p>Comprehensive preparation for JEE Main and Advanced with expert faculty and proven methodology.</p>
+                        <ul class="batch-features">
+                            <li>Live Interactive Classes</li>
+                            <li>Doubt Clearing Sessions</li>
+                            <li>Regular Tests & Analysis</li>
+                            <li>Study Material Included</li>
+                        </ul>
+                        <div class="batch-details">
+                            <span class="price">₹15,000</span>
+                            <span class="duration">12 Months</span>
+                        </div>
+                        <button class="btn-primary">Enroll Now</button>
+                    </div>
+                    
+                    <div class="batch-card" data-category="12th">
+                        <h3>CBSE Class 12 - PCM</h3>
+                        <p>Complete CBSE Class 12 Physics, Chemistry, and Mathematics course with board exam preparation.</p>
+                        <ul class="batch-features">
+                            <li>NCERT Based Teaching</li>
+                            <li>Previous Year Papers</li>
+                            <li>Mock Tests</li>
+                            <li>Practical Sessions</li>
+                        </ul>
+                        <div class="batch-details">
+                            <span class="price">₹8,000</span>
+                            <span class="duration">10 Months</span>
+                        </div>
+                        <button class="btn-primary">Enroll Now</button>
+                    </div>
+                    
+                    <div class="batch-card" data-category="10th">
+                        <h3>CBSE Class 10 - Complete</h3>
+                        <p>Full CBSE Class 10 preparation covering all subjects with special focus on board exam preparation.</p>
+                        <ul class="batch-features">
+                            <li>All Subjects Coverage</li>
+                            <li>Sample Papers</li>
+                            <li>Regular Assessments</li>
+                            <li>Exam Strategy</li>
+                        </ul>
+                        <div class="batch-details">
+                            <span class="price">₹6,000</span>
+                            <span class="duration">10 Months</span>
+                        </div>
+                        <button class="btn-primary">Enroll Now</button>
+                    </div>
+                </div>
             </div>
         </section>
     </div>
 
+    <!-- Notes Page -->
     <div id="notes" class="page">
         <section class="page-hero">
             <div class="container">
                 <h1>Study Notes</h1>
-                <p>Access comprehensive notes</p>
+                <p>Access comprehensive notes and study materials</p>
+            </div>
+        </section>
+        
+        <section class="notes-content">
+            <div class="container">
+                <div class="notes-filter">
+                    <select onchange="filterNotes(this.value)">
+                        <option value="all">All Subjects</option>
+                        <option value="physics">Physics</option>
+                        <option value="chemistry">Chemistry</option>
+                        <option value="mathematics">Mathematics</option>
+                        <option value="biology">Biology</option>
+                    </select>
+                </div>
+                
+                <div class="notes-grid">
+                    <div class="note-card" data-subject="physics">
+                        <div class="note-header">
+                            <h3>Physics - Mechanics</h3>
+                            <span class="note-badge">Free</span>
+                        </div>
+                        <p>Complete notes on mechanics including motion, force, energy, and momentum with solved examples.</p>
+                        <div class="note-actions">
+                            <button class="btn-primary">Download PDF</button>
+                            <button class="btn-secondary">View Online</button>
+                        </div>
+                    </div>
+                    
+                    <div class="note-card" data-subject="chemistry">
+                        <div class="note-header">
+                            <h3>Chemistry - Organic</h3>
+                            <span class="note-badge">Premium</span>
+                        </div>
+                        <p>Comprehensive organic chemistry notes with reaction mechanisms and important compounds.</p>
+                        <div class="note-actions">
+                            <button class="btn-primary">Download PDF</button>
+                            <button class="btn-secondary">View Online</button>
+                        </div>
+                    </div>
+                    
+                    <div class="note-card" data-subject="mathematics">
+                        <div class="note-header">
+                            <h3>Mathematics - Calculus</h3>
+                            <span class="note-badge">Free</span>
+                        </div>
+                        <p>Detailed calculus notes covering limits, derivatives, and integration with practice problems.</p>
+                        <div class="note-actions">
+                            <button class="btn-primary">Download PDF</button>
+                            <button class="btn-secondary">View Online</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </div>
 
+    <!-- Contact Page -->
     <div id="contact" class="page">
         <section class="page-hero">
             <div class="container">
                 <h1>Contact Us</h1>
-                <p>Get in touch with our team</p>
+                <p>Get in touch with our team for any queries</p>
+            </div>
+        </section>
+        
+        <section class="contact-content">
+            <div class="container">
+                <div class="contact-grid">
+                    <div class="contact-info">
+                        <h3>Get in Touch</h3>
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <h4>Phone</h4>
+                                <p>+91 9876543210</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <h4>Email</h4>
+                                <p>info@vidyasphere.com</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <h4>Address</h4>
+                                <p>123 Education Street, Learning City, Knowledge State - 123456</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-form">
+                        <h3>Send us a Message</h3>
+                        <form>
+                            <div class="form-group">
+                                <input type="text" placeholder="Your Name" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="email" placeholder="Your Email" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" placeholder="Subject" required>
+                            </div>
+                            <div class="form-group">
+                                <textarea placeholder="Your Message" rows="5" required></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- PYQ Page -->
+    <div id="pyq" class="page">
+        <section class="page-hero">
+            <div class="container">
+                <h1>Previous Year Questions</h1>
+                <p>Practice with authentic exam papers and solutions</p>
+            </div>
+        </section>
+        
+        <section class="pyq-content">
+            <div class="container">
+                <div class="pyq-categories">
+                    <div class="pyq-category">
+                        <h3>JEE Main & Advanced</h3>
+                        <ul>
+                            <li>JEE Main 2023</li>
+                            <li>JEE Main 2022</li>
+                            <li>JEE Advanced 2023</li>
+                            <li>JEE Advanced 2022</li>
+                        </ul>
+                        <button class="btn-primary">Access Papers</button>
+                    </div>
+                    
+                    <div class="pyq-category">
+                        <h3>CBSE Class 12</h3>
+                        <ul>
+                            <li>Physics Board 2023</li>
+                            <li>Chemistry Board 2023</li>
+                            <li>Mathematics Board 2023</li>
+                            <li>All Subjects 2022</li>
+                        </ul>
+                        <button class="btn-primary">Access Papers</button>
+                    </div>
+                    
+                    <div class="pyq-category">
+                        <h3>CBSE Class 10</h3>
+                        <ul>
+                            <li>Science Board 2023</li>
+                            <li>Mathematics Board 2023</li>
+                            <li>Social Science 2023</li>
+                            <li>All Subjects 2022</li>
+                        </ul>
+                        <button class="btn-primary">Access Papers</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Attendance Page -->
+    <div id="attendance" class="page">
+        <section class="page-hero">
+            <div class="container">
+                <h1>Attendance Tracker</h1>
+                <p>Monitor your class attendance and performance</p>
+            </div>
+        </section>
+        
+        <section class="attendance-content">
+            <div class="container">
+                <div class="attendance-stats">
+                    <div class="stat-card">
+                        <h3>Overall Attendance</h3>
+                        <div class="stat-value">85%</div>
+                        <p>This Month</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Classes Attended</h3>
+                        <div class="stat-value">34</div>
+                        <p>Out of 40</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Performance</h3>
+                        <div class="stat-value">A+</div>
+                        <p>Current Grade</p>
+                    </div>
+                </div>
+                
+                <div class="attendance-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Subject</th>
+                                <th>Topic</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2023-12-01</td>
+                                <td>Physics</td>
+                                <td>Mechanics - Motion</td>
+                                <td><span class="status present">Present</span></td>
+                            </tr>
+                            <tr>
+                                <td>2023-12-02</td>
+                                <td>Chemistry</td>
+                                <td>Organic Chemistry</td>
+                                <td><span class="status present">Present</span></td>
+                            </tr>
+                            <tr>
+                                <td>2023-12-03</td>
+                                <td>Mathematics</td>
+                                <td>Calculus - Limits</td>
+                                <td><span class="status absent">Absent</span></td>
+                            </tr>
+                            <tr>
+                                <td>2023-12-04</td>
+                                <td>Physics</td>
+                                <td>Electricity</td>
+                                <td><span class="status present">Present</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
     </div>
@@ -143,6 +486,57 @@
                     </div>
                     <button type="submit" class="btn-primary">Create Account</button>
                 </form>
+            </div>
+        </section>
+    </div>
+
+    <!-- Donate Page -->
+    <div id="donate" class="page">
+        <section class="page-hero">
+            <div class="container">
+                <h1>Support VidyaSphere</h1>
+                <p>Help us provide quality education to more students</p>
+            </div>
+        </section>
+        
+        <section class="donate-content">
+            <div class="container">
+                <div class="donate-info">
+                    <h3>Your Support Makes a Difference</h3>
+                    <p>Every donation helps us reach more students and provide better educational resources. Your contribution directly impacts the quality of education we can offer.</p>
+                </div>
+                
+                <div class="donation-amounts">
+                    <h3>Choose Donation Amount</h3>
+                    <div class="amount-grid">
+                        <button class="amount-btn" onclick="selectAmount(500)">₹500</button>
+                        <button class="amount-btn" onclick="selectAmount(1000)">₹1,000</button>
+                        <button class="amount-btn" onclick="selectAmount(2500)">₹2,500</button>
+                        <button class="amount-btn" onclick="selectAmount(5000)">₹5,000</button>
+                    </div>
+                    <div class="custom-amount">
+                        <input type="number" placeholder="Enter custom amount" id="customAmount">
+                    </div>
+                    <button class="btn-primary donate-btn">Donate Now</button>
+                </div>
+                
+                <div class="impact-stats">
+                    <h3>Your Impact</h3>
+                    <div class="impact-grid">
+                        <div class="impact-item">
+                            <span class="impact-number">500+</span>
+                            <p>Students Benefited</p>
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-number">₹2,50,000</span>
+                            <p>Total Donations</p>
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-number">95%</span>
+                            <p>Success Rate</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </div>

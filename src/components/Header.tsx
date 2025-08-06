@@ -12,9 +12,11 @@ const Header = () => {
   const navItems = [
     { href: "/", label: "Home" },
     { href: "/about", label: "About" },
+    { href: "/courses", label: "Courses" },
     { href: "/batches", label: "Batches" },
     { href: "/notes", label: "Notes" },
     { href: "/pyq", label: "PYQ" },
+    { href: "/blogs", label: "Blogs" },
     { href: "/attendance", label: "Attendance" },
     { href: "/contact", label: "Contact" },
   ];
@@ -28,7 +30,7 @@ const Header = () => {
             <div className="p-2 bg-accent rounded-lg">
               <GraduationCap className="h-6 w-6 text-accent-foreground" />
             </div>
-            <span className="text-xl font-bold text-gradient">VidyaSphere</span>
+            <span className="text-xl font-bold text-gradient">EduMitra</span>
           </Link>
 
           {/* Desktop Navigation */}

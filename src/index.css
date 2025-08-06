@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Professional VidyaSphere Educational Platform Design System */
+/* Professional EduMitra Educational Platform Design System */
 
 @layer base {
   :root {
@@ -40,14 +40,14 @@
 
     --radius: 0.75rem;
 
-    /* Custom VidyaSphere Variables */
+    /* Custom EduMitra Variables */
     --hero-gradient: linear-gradient(135deg, hsl(214 67% 45%) 0%, hsl(142 76% 36%) 100%);
     --card-shadow: 0 4px 20px -4px hsl(214 67% 45% / 0.1);
     --text-gradient: linear-gradient(135deg, hsl(214 67% 45%), hsl(142 76% 36%));
     
     /* Educational Typography */
-    --font-heading: 'Inter', system-ui, sans-serif;
-    --font-body: 'Inter', system-ui, sans-serif;
+    --font-heading: 'PT Sans', system-ui, sans-serif;
+    --font-body: 'PT Sans', system-ui, sans-serif;
 
     /* Sidebar Variables */
     --sidebar-background: 220 13% 91%;

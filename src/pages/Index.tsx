@@ -15,7 +15,7 @@ const Index = () => {
             </div>
             <div className="flex gap-4">
               <Link to="/courses" className="text-foreground hover:text-primary transition">Courses</Link>
-              <Link to="/batches" className="text-foreground hover:text-primary transition">Batches</Link>
+              <Link to="/batches" className="text-foreground hover:text-primary transition">PYQs</Link>
               <Link to="/notes" className="text-foreground hover:text-primary transition">Notes</Link>
               <Link to="/blogs" className="text-foreground hover:text-primary transition">Blogs</Link>
               <Link to="/about" className="text-foreground hover:text-primary transition">About</Link>

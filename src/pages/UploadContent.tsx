@@ -7,7 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 const UploadContent = () => {
   const [type, setType] = useState<"note" | "pyq">("note");
   const [title, setTitle] = useState("");
-  const [category, setCategory] = useState("");
+  const [branch, setBranch] = useState("");
+  const [semester, setSemester] = useState("");
   const [subject, setSubject] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -64,7 +65,8 @@ const UploadContent = () => {
           .from("notes")
           .insert({
             title,
-            category,
+            branch,
+            semester,
             subject,
             file_url: publicUrl,
             uploaded_by: user.id
@@ -76,7 +78,8 @@ const UploadContent = () => {
           .from("pyqs")
           .insert({
             title,
-            category,
+            branch,
+            semester,
             subject,
             file_url: publicUrl,
             uploaded_by: user.id
@@ -87,7 +90,8 @@ const UploadContent = () => {
 
       toast.success(`${type === "note" ? "Note" : "PYQ"} uploaded successfully!`);
       setTitle("");
-      setCategory("");
+      setBranch("");
+      setSemester("");
       setSubject("");
       setFile(null);
       
@@ -138,15 +142,34 @@ const UploadContent = () => {
                 required
               />
               <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                value={branch}
+                onChange={(e) => setBranch(e.target.value)}
                 className="w-full px-4 py-2 border rounded-lg"
                 required
               >
-                <option value="">Select Category</option>
-                <option value="engineering">Engineering</option>
-                <option value="class10">Class 10</option>
-                <option value="class12">Class 12</option>
+                <option value="">Select Branch</option>
+                <option value="computer-science">Computer Science</option>
+                <option value="civil-engineering">Civil Engineering</option>
+                <option value="mechanical-engineering">Mechanical Engineering</option>
+                <option value="ece">Electronics & Communication</option>
+                <option value="electrical-engineering">Electrical Engineering</option>
+                <option value="chemical-engineering">Chemical Engineering</option>
+              </select>
+              <select
+                value={semester}
+                onChange={(e) => setSemester(e.target.value)}
+                className="w-full px-4 py-2 border rounded-lg"
+                required
+              >
+                <option value="">Select Semester</option>
+                <option value="1">Semester 1</option>
+                <option value="2">Semester 2</option>
+                <option value="3">Semester 3</option>
+                <option value="4">Semester 4</option>
+                <option value="5">Semester 5</option>
+                <option value="6">Semester 6</option>
+                <option value="7">Semester 7</option>
+                <option value="8">Semester 8</option>
               </select>
               <input
                 type="text"

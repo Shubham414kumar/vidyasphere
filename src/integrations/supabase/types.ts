@@ -261,31 +261,37 @@ export type Database = {
       }
       notes: {
         Row: {
+          branch: string | null
           category: string
           created_at: string | null
           file_url: string
           grade: string | null
           id: string
+          semester: string | null
           subject: string | null
           title: string
           uploaded_by: string | null
         }
         Insert: {
+          branch?: string | null
           category: string
           created_at?: string | null
           file_url: string
           grade?: string | null
           id?: string
+          semester?: string | null
           subject?: string | null
           title: string
           uploaded_by?: string | null
         }
         Update: {
+          branch?: string | null
           category?: string
           created_at?: string | null
           file_url?: string
           grade?: string | null
           id?: string
+          semester?: string | null
           subject?: string | null
           title?: string
           uploaded_by?: string | null
@@ -332,30 +338,36 @@ export type Database = {
       }
       pyqs: {
         Row: {
+          branch: string | null
           category: string
           created_at: string | null
           file_url: string
           id: string
+          semester: string | null
           subject: string | null
           title: string
           uploaded_by: string | null
           year: number | null
         }
         Insert: {
+          branch?: string | null
           category: string
           created_at?: string | null
           file_url: string
           id?: string
+          semester?: string | null
           subject?: string | null
           title: string
           uploaded_by?: string | null
           year?: number | null
         }
         Update: {
+          branch?: string | null
           category?: string
           created_at?: string | null
           file_url?: string
           id?: string
+          semester?: string | null
           subject?: string | null
           title?: string
           uploaded_by?: string | null

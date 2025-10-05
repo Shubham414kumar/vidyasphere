@@ -1,13 +1,32 @@
 import { Link } from "react-router-dom";
-import { FileText } from "lucide-react";
+import { FileText, Download } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const Notes = () => {
-  const notes = [
-    { id: 1, title: "Engineering Mathematics - Unit 1", category: "Engineering", subject: "Mathematics" },
-    { id: 2, title: "Physics - Mechanics Notes", category: "Class 12", subject: "Physics" },
-    { id: 3, title: "Chemistry - Organic Chemistry", category: "Class 12", subject: "Chemistry" },
-    { id: 4, title: "Science - Complete Notes", category: "Class 10", subject: "Science" },
-  ];
+  const [notes, setNotes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchNotes();
+  }, []);
+
+  const fetchNotes = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("notes")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setNotes(data || []);
+    } catch (error: any) {
+      toast.error("Failed to load notes");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -23,16 +42,31 @@ const Notes = () => {
             Upload Notes
           </Link>
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {notes.map(note => (
-            <div key={note.id} className="border rounded-lg p-6 hover:shadow-lg transition cursor-pointer">
-              <FileText className="w-12 h-12 text-primary mb-4" />
-              <span className="text-sm text-primary font-semibold">{note.category}</span>
-              <h3 className="text-lg font-bold mt-2 mb-1">{note.title}</h3>
-              <p className="text-sm text-muted-foreground">{note.subject}</p>
-            </div>
-          ))}
-        </div>
+        {loading ? (
+          <p className="text-center">Loading notes...</p>
+        ) : notes.length === 0 ? (
+          <p className="text-center text-muted-foreground">No notes available yet. Be the first to upload!</p>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {notes.map(note => (
+              <div key={note.id} className="border rounded-lg p-6 hover:shadow-lg transition">
+                <FileText className="w-12 h-12 text-primary mb-4" />
+                <span className="text-sm text-primary font-semibold">{note.category}</span>
+                <h3 className="text-lg font-bold mt-2 mb-1">{note.title}</h3>
+                <p className="text-sm text-muted-foreground mb-4">{note.subject}</p>
+                <a 
+                  href={note.file_url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
+                >
+                  <Download className="w-4 h-4" />
+                  Download
+                </a>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

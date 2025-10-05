@@ -1,20 +1,101 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Upload } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const UploadContent = () => {
   const [type, setType] = useState<"note" | "pyq">("note");
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [subject, setSubject] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const selectedFile = e.target.files[0];
+      if (selectedFile.type !== "application/pdf") {
+        toast.error("Please upload only PDF files");
+        return;
+      }
+      setFile(selectedFile);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Upload functionality coming soon!");
-    setTitle("");
-    setCategory("");
-    setSubject("");
+    
+    if (!file) {
+      toast.error("Please select a file to upload");
+      return;
+    }
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast.error("Please login to upload content");
+      navigate("/auth");
+      return;
+    }
+
+    setUploading(true);
+
+    try {
+      // Upload file to Supabase storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${user.id}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("Pdf's or Documents")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from("Pdf's or Documents")
+        .getPublicUrl(filePath);
+
+      // Insert record into appropriate table
+      if (type === "note") {
+        const { error: insertError } = await supabase
+          .from("notes")
+          .insert({
+            title,
+            category,
+            subject,
+            file_url: publicUrl,
+            uploaded_by: user.id
+          });
+
+        if (insertError) throw insertError;
+      } else {
+        const { error: insertError } = await supabase
+          .from("pyqs")
+          .insert({
+            title,
+            category,
+            subject,
+            file_url: publicUrl,
+            uploaded_by: user.id
+          });
+
+        if (insertError) throw insertError;
+      }
+
+      toast.success(`${type === "note" ? "Note" : "PYQ"} uploaded successfully!`);
+      setTitle("");
+      setCategory("");
+      setSubject("");
+      setFile(null);
+      
+    } catch (error: any) {
+      toast.error(error.message || "Failed to upload");
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -76,14 +157,26 @@ const UploadContent = () => {
                 required
               />
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                <Upload className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                <p className="text-muted-foreground">Click to upload file</p>
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handleFileChange}
+                  className="hidden"
+                  id="file-upload"
+                />
+                <label htmlFor="file-upload" className="cursor-pointer">
+                  <Upload className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                  <p className="text-muted-foreground">
+                    {file ? file.name : "Click to upload PDF file"}
+                  </p>
+                </label>
               </div>
               <button
                 type="submit"
-                className="w-full py-3 bg-primary text-white rounded-lg hover:bg-primary/90"
+                disabled={uploading}
+                className="w-full py-3 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50"
               >
-                Upload {type === "note" ? "Note" : "PYQ"}
+                {uploading ? "Uploading..." : `Upload ${type === "note" ? "Note" : "PYQ"}`}
               </button>
             </form>
           </div>

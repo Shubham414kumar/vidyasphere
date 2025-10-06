@@ -1,4 +1,6 @@
-import { Link } from "react-router-dom";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
+import { Calendar, Clock, ArrowRight } from "lucide-react";
 
 const Blogs = () => {
   const blogs = [
@@ -8,12 +10,8 @@ const Blogs = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="bg-white shadow-sm py-4">
-        <div className="container mx-auto px-4">
-          <Link to="/" className="text-2xl font-bold text-primary">← Back to Home</Link>
-        </div>
-      </nav>
+    <div className="min-h-screen">
+      <Navigation />
       <div className="container mx-auto px-4 py-12">
         <h1 className="text-4xl font-bold mb-8">Our Blogs</h1>
         <div className="space-y-6">
@@ -26,6 +24,7 @@ const Blogs = () => {
           ))}
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

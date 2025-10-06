@@ -6,49 +6,56 @@
 
 @layer base {
   :root {
-    --background: 210 100% 97%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 210 100% 98%;
+    --foreground: 222 47% 11%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 200 100% 45%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 180 100% 45%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 200 100% 45%;
-    --radius: 0.5rem;
-    --gradient-primary: linear-gradient(135deg, hsl(200, 100%, 45%), hsl(180, 100%, 45%));
+    --popover-foreground: 222 47% 11%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 199 89% 48%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 217 91% 60%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 217 91% 60%;
+    --radius: 0.75rem;
+    --gradient-primary: linear-gradient(135deg, hsl(217, 91%, 60%), hsl(199, 89%, 48%));
+    --gradient-secondary: linear-gradient(135deg, hsl(199, 89%, 48%), hsl(180, 85%, 55%));
+    --gradient-hero: linear-gradient(135deg, hsl(217, 91%, 60%) 0%, hsl(199, 89%, 48%) 50%, hsl(180, 85%, 55%) 100%);
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+    --shadow-glow: 0 0 40px hsl(217 91% 60% / 0.3);
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 222 47% 11%;
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
+    --card: 222 47% 15%;
     --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
+    --popover: 222 47% 15%;
     --popover-foreground: 210 40% 98%;
-    --primary: 200 100% 50%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 180 100% 50%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 199 89% 48%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 91% 60%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 200 100% 50%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 217 91% 60%;
   }
 }
 
@@ -58,6 +65,88 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'PT Sans', sans-serif;
+    font-family: 'Inter', 'PT Sans', sans-serif;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-primary);
+  }
+  
+  .gradient-border {
+    @apply relative before:absolute before:inset-0 before:rounded-[inherit] before:p-[2px];
+    background: var(--gradient-primary);
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.6s ease-out;
+  }
+  
+  .animate-slide-down {
+    animation: slideDown 0.6s ease-out;
+  }
+  
+  .animate-scale-in {
+    animation: scaleIn 0.4s ease-out;
+  }
+  
+  .hover-lift {
+    @apply transition-all duration-300 hover:-translate-y-2 hover:shadow-xl;
+  }
+  
+  .glass-effect {
+    @apply bg-white/80 backdrop-blur-lg border border-white/20;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }

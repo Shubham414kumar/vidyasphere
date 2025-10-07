@@ -1,8 +1,9 @@
-import { Link } from "react-router-dom";
-import { FileText, Download, ChevronRight, BookOpen, FolderOpen } from "lucide-react";
+import { FileText, Download, ChevronRight, FolderOpen } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
 
 const Notes = () => {
   const [notes, setNotes] = useState<any[]>([]);
@@ -56,24 +57,14 @@ const Notes = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5">
-      <nav className="bg-card shadow-lg border-b sticky top-0 z-10 backdrop-blur-sm bg-card/90">
-        <div className="container mx-auto px-4 py-4">
-          <Link to="/" className="text-2xl font-bold text-primary hover:text-primary/80 transition flex items-center gap-2">
-            <BookOpen className="w-8 h-8" />
-            <span>← Back to Home</span>
-          </Link>
-        </div>
-      </nav>
-      <div className="container mx-auto px-4 py-12">
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      <div className="container mx-auto px-4 py-16">
         <div className="flex justify-between items-center mb-12 animate-fade-in">
           <div>
-            <h1 className="text-5xl font-bold mb-2 bg-gradient-primary bg-clip-text text-transparent">Study Notes</h1>
+            <h1 className="text-5xl font-bold mb-4 gradient-text">Study Notes</h1>
             <p className="text-muted-foreground text-lg">Access comprehensive notes organized by branch and semester</p>
           </div>
-          <Link to="/upload" className="px-6 py-3 bg-gradient-primary text-white rounded-lg hover:opacity-90 transition font-semibold shadow-lg hover:shadow-xl">
-            Upload Notes
-          </Link>
         </div>
         
         {loading ? (
@@ -88,7 +79,7 @@ const Notes = () => {
             {/* Branch Selection */}
             {!selectedBranch && (
               <div>
-                <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
+                <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
                   <FolderOpen className="w-8 h-8 text-primary" />
                   Select Branch
                 </h2>
@@ -97,7 +88,7 @@ const Notes = () => {
                     <button
                       key={branch.id}
                       onClick={() => setSelectedBranch(branch.id)}
-                      className="group bg-card border-2 rounded-2xl p-8 hover:border-primary hover:shadow-2xl transition-all duration-300 text-left hover:-translate-y-2 animate-fade-in"
+                      className="group glass-effect border-2 rounded-2xl p-8 hover:border-primary hover:shadow-xl transition-all duration-300 text-left hover-lift animate-fade-in"
                       style={{ animationDelay: `${idx * 50}ms` }}
                     >
                       <div className="flex items-center justify-between mb-4">
@@ -105,7 +96,7 @@ const Notes = () => {
                         <ChevronRight className="w-6 h-6 text-muted-foreground group-hover:text-primary transition" />
                       </div>
                       <h3 className="text-xl font-bold group-hover:text-primary transition">{branch.name}</h3>
-                      <p className="text-muted-foreground mt-2">{notes.filter(n => n.branch === branch.id).length} notes available</p>
+                      <p className="text-sm text-muted-foreground mt-2">{notes.filter(n => n.branch === branch.id).length} notes available</p>
                     </button>
                   ))}
                 </div>
@@ -117,20 +108,20 @@ const Notes = () => {
               <div>
                 <button 
                   onClick={() => setSelectedBranch(null)}
-                  className="text-primary mb-6 hover:underline font-semibold flex items-center gap-2"
+                  className="text-primary mb-8 hover:underline font-semibold flex items-center gap-2"
                 >
                   ← Back to Branches
                 </button>
-                <h2 className="text-3xl font-bold mb-6">Select Semester</h2>
+                <h2 className="text-3xl font-bold mb-8">Select Semester</h2>
                 <div className="grid md:grid-cols-4 gap-6">
                   {semesters.map((sem, idx) => (
                     <button
                       key={sem}
                       onClick={() => setSelectedSemester(sem)}
-                      className="group bg-card border-2 rounded-2xl p-6 hover:border-accent hover:shadow-2xl transition-all duration-300 text-center hover:-translate-y-2 animate-fade-in"
+                      className="group glass-effect border-2 rounded-2xl p-6 hover:border-secondary hover:shadow-xl transition-all duration-300 text-center hover-lift animate-scale-in"
                       style={{ animationDelay: `${idx * 50}ms` }}
                     >
-                      <div className="text-4xl font-bold text-accent mb-2 group-hover:scale-110 transition">{sem}</div>
+                      <div className="text-4xl font-bold text-secondary mb-2 group-hover:scale-110 transition">{sem}</div>
                       <p className="text-muted-foreground">Semester</p>
                       <p className="text-sm text-muted-foreground mt-2">{notes.filter(n => n.branch === selectedBranch && n.semester === sem).length} notes</p>
                     </button>
@@ -144,32 +135,32 @@ const Notes = () => {
               <div>
                 <button 
                   onClick={() => setSelectedSemester(null)}
-                  className="text-primary mb-6 hover:underline font-semibold flex items-center gap-2"
+                  className="text-primary mb-8 hover:underline font-semibold flex items-center gap-2"
                 >
                   ← Back to Semesters
                 </button>
-                <h2 className="text-3xl font-bold mb-6">Subjects</h2>
+                <h2 className="text-3xl font-bold mb-8">Subjects</h2>
                 {getUniqueSubjects(selectedBranch, selectedSemester).length === 0 ? (
-                  <div className="bg-card border rounded-2xl p-12 text-center">
+                  <div className="glass-effect border rounded-2xl p-12 text-center">
                     <FileText className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
                     <p className="text-muted-foreground text-lg">No notes available for this semester yet.</p>
                   </div>
                 ) : (
                   <div className="space-y-8">
                     {getUniqueSubjects(selectedBranch, selectedSemester).map((subject, idx) => (
-                      <div key={subject} className="bg-card border-2 rounded-2xl p-6 hover:shadow-xl transition-all animate-fade-in" style={{ animationDelay: `${idx * 100}ms` }}>
+                      <div key={subject} className="glass-effect border-2 rounded-2xl p-8 hover:shadow-xl transition-all animate-fade-in" style={{ animationDelay: `${idx * 100}ms` }}>
                         <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                          <div className="p-2 bg-primary/10 rounded-lg">
+                          <div className="p-3 bg-primary/10 rounded-xl">
                             <FileText className="w-6 h-6 text-primary" />
                           </div>
                           {subject}
                         </h3>
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                           {getNotesBySubject(selectedBranch, selectedSemester, subject).map((note) => (
-                            <div key={note.id} className="group bg-background border rounded-xl p-5 hover:shadow-lg hover:border-primary transition-all hover:-translate-y-1">
-                              <h4 className="font-bold mb-4 group-hover:text-primary transition">{note.title}</h4>
+                            <div key={note.id} className="group glass-effect border-2 rounded-xl p-6 hover:shadow-lg hover:border-primary transition-all hover-lift">
+                              <h4 className="font-bold mb-3 group-hover:text-primary transition">{note.title}</h4>
                               {note.grade && (
-                                <span className="inline-block px-3 py-1 bg-muted text-muted-foreground rounded-full text-sm mb-3">
+                                <span className="inline-block px-3 py-1 bg-primary/10 text-primary rounded-full text-sm mb-4 font-medium">
                                   {note.grade}
                                 </span>
                               )}
@@ -177,7 +168,7 @@ const Notes = () => {
                                 href={note.file_url} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-primary text-white rounded-lg hover:opacity-90 transition-all font-semibold shadow-lg hover:shadow-xl"
+                                className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-lg hover:shadow-lg transition-all font-semibold"
                               >
                                 <Download className="w-4 h-4" />
                                 Download
@@ -194,6 +185,7 @@ const Notes = () => {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 };

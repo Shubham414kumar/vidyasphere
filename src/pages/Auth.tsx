@@ -24,7 +24,7 @@ const Auth = () => {
         toast.success("Welcome back!");
         navigate("/");
       } else {
-        const { data, error } = await supabase.auth.signUp({
+        const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -34,15 +34,7 @@ const Auth = () => {
         });
         if (error) throw error;
         
-        if (data.user) {
-          await supabase.from("profiles").insert({
-            user_id: data.user.id,
-            full_name: fullName,
-            phone
-          });
-        }
-        
-        toast.success("Account created! Please check your email.");
+        toast.success("Account created! Please check your email for verification link.");
         setIsLogin(true);
       }
     } catch (error: any) {

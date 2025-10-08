@@ -10,6 +10,7 @@ const Navigation = () => {
     { to: "/courses", label: "Courses" },
     { to: "/batches", label: "PYQs" },
     { to: "/notes", label: "Notes" },
+    { to: "/attendance", label: "Attendance" },
     { to: "/blogs", label: "Blogs" },
     { to: "/about", label: "About" },
     { to: "/contact", label: "Contact" },

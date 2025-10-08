@@ -1,30 +1,29 @@
-import { FileText, Download, ChevronRight, FolderOpen } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import { Download, ChevronRight, Search, Filter } from "lucide-react";
+import { toast } from "sonner";
 
 const Notes = () => {
   const [notes, setNotes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedBranch, setSelectedBranch] = useState<string | null>(null);
-  const [selectedSemester, setSelectedSemester] = useState<string | null>(null);
+  const [selectedBranch, setSelectedBranch] = useState("");
+  const [selectedSemester, setSelectedSemester] = useState("");
+  const [selectedSubject, setSelectedSubject] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterGrade, setFilterGrade] = useState("");
 
-  useEffect(() => {
-    fetchNotes();
-  }, []);
+  useEffect(() => { fetchNotes(); }, []);
 
   const fetchNotes = async () => {
     try {
-      const { data, error } = await supabase
-        .from("notes")
-        .select("*")
-        .order("created_at", { ascending: false });
-
+      setLoading(true);
+      const { data, error } = await supabase.from('notes').select('*').order('created_at', { ascending: false });
       if (error) throw error;
       setNotes(data || []);
-    } catch (error: any) {
+    } catch (error) {
+      console.error('Error fetching notes:', error);
       toast.error("Failed to load notes");
     } finally {
       setLoading(false);
@@ -32,159 +31,90 @@ const Notes = () => {
   };
 
   const branches = [
-    { id: "computer-science", name: "Computer Science" },
-    { id: "civil-engineering", name: "Civil Engineering" },
-    { id: "mechanical-engineering", name: "Mechanical Engineering" },
-    { id: "ece", name: "Electronics & Communication" },
-    { id: "electrical-engineering", name: "Electrical Engineering" },
-    { id: "chemical-engineering", name: "Chemical Engineering" },
+    { id: 'cse', name: 'Computer Science Engineering' },
+    { id: 'ece', name: 'Electronics & Communication Engineering' },
+    { id: 'me', name: 'Mechanical Engineering' },
+    { id: 'ee', name: 'Electrical Engineering' },
+    { id: 'ce', name: 'Civil Engineering' },
   ];
 
-  const semesters = ["1", "2", "3", "4", "5", "6", "7", "8"];
+  const semesters = ['1', '2', '3', '4', '5', '6', '7', '8'];
 
   const getUniqueSubjects = (branch: string, semester: string) => {
-    return [...new Set(
-      notes
-        .filter(note => note.branch === branch && note.semester === semester)
-        .map(note => note.subject)
-    )];
+    return Array.from(new Set(notes.filter(note => note.branch === branch && note.semester === semester).map(note => note.subject).filter(Boolean)));
   };
 
   const getNotesBySubject = (branch: string, semester: string, subject: string) => {
-    return notes.filter(
-      note => note.branch === branch && note.semester === semester && note.subject === subject
-    );
+    return notes.filter(note => note.branch === branch && note.semester === semester && note.subject === subject && (searchQuery === "" || note.title.toLowerCase().includes(searchQuery.toLowerCase())) && (filterGrade === "" || note.grade === filterGrade));
   };
 
+  const availableGrades = Array.from(new Set(notes.map(n => n.grade).filter(Boolean))).sort();
+
+  const handleDownload = async (fileUrl: string, title: string) => {
+    try {
+      const response = await fetch(fileUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${title}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      toast.success("Download started!");
+    } catch (error) {
+      toast.error("Failed to download file");
+    }
+  };
+
+  const resetFilters = () => { setSearchQuery(""); setFilterGrade(""); };
+  const subjects = selectedBranch && selectedSemester ? getUniqueSubjects(selectedBranch, selectedSemester) : [];
+  const filteredNotes = selectedBranch && selectedSemester && selectedSubject ? getNotesBySubject(selectedBranch, selectedSemester, selectedSubject) : [];
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen flex flex-col">
       <Navigation />
-      <div className="container mx-auto px-4 py-16">
-        <div className="flex justify-between items-center mb-12 animate-fade-in">
-          <div>
-            <h1 className="text-5xl font-bold mb-4 gradient-text">Study Notes</h1>
-            <p className="text-muted-foreground text-lg">Access comprehensive notes organized by branch and semester</p>
-          </div>
+      <main className="flex-1 container mx-auto px-4 py-12">
+        <div className="text-center mb-12 animate-fade-in">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 gradient-text">Study Notes</h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Access comprehensive study notes organized by branch, semester, and subject</p>
         </div>
-        
-        {loading ? (
-          <p className="text-center text-muted-foreground text-lg">Loading notes...</p>
-        ) : notes.length === 0 ? (
-          <div className="bg-card border rounded-2xl p-12 text-center">
-            <FileText className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground text-lg">No notes available yet. Be the first to upload!</p>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {/* Branch Selection */}
-            {!selectedBranch && (
-              <div>
-                <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
-                  <FolderOpen className="w-8 h-8 text-primary" />
-                  Select Branch
-                </h2>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {branches.map((branch, idx) => (
-                    <button
-                      key={branch.id}
-                      onClick={() => setSelectedBranch(branch.id)}
-                      className="group glass-effect border-2 rounded-2xl p-8 hover:border-primary hover:shadow-xl transition-all duration-300 text-left hover-lift animate-fade-in"
-                      style={{ animationDelay: `${idx * 50}ms` }}
-                    >
-                      <div className="flex items-center justify-between mb-4">
-                        <FolderOpen className="w-12 h-12 text-primary group-hover:scale-110 transition" />
-                        <ChevronRight className="w-6 h-6 text-muted-foreground group-hover:text-primary transition" />
-                      </div>
-                      <h3 className="text-xl font-bold group-hover:text-primary transition">{branch.name}</h3>
-                      <p className="text-sm text-muted-foreground mt-2">{notes.filter(n => n.branch === branch.id).length} notes available</p>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
 
-            {/* Semester Selection */}
-            {selectedBranch && !selectedSemester && (
-              <div>
-                <button 
-                  onClick={() => setSelectedBranch(null)}
-                  className="text-primary mb-8 hover:underline font-semibold flex items-center gap-2"
-                >
-                  ← Back to Branches
-                </button>
-                <h2 className="text-3xl font-bold mb-8">Select Semester</h2>
-                <div className="grid md:grid-cols-4 gap-6">
-                  {semesters.map((sem, idx) => (
-                    <button
-                      key={sem}
-                      onClick={() => setSelectedSemester(sem)}
-                      className="group glass-effect border-2 rounded-2xl p-6 hover:border-secondary hover:shadow-xl transition-all duration-300 text-center hover-lift animate-scale-in"
-                      style={{ animationDelay: `${idx * 50}ms` }}
-                    >
-                      <div className="text-4xl font-bold text-secondary mb-2 group-hover:scale-110 transition">{sem}</div>
-                      <p className="text-muted-foreground">Semester</p>
-                      <p className="text-sm text-muted-foreground mt-2">{notes.filter(n => n.branch === selectedBranch && n.semester === sem).length} notes</p>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Subject & Notes Display */}
-            {selectedBranch && selectedSemester && (
-              <div>
-                <button 
-                  onClick={() => setSelectedSemester(null)}
-                  className="text-primary mb-8 hover:underline font-semibold flex items-center gap-2"
-                >
-                  ← Back to Semesters
-                </button>
-                <h2 className="text-3xl font-bold mb-8">Subjects</h2>
-                {getUniqueSubjects(selectedBranch, selectedSemester).length === 0 ? (
-                  <div className="glass-effect border rounded-2xl p-12 text-center">
-                    <FileText className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground text-lg">No notes available for this semester yet.</p>
-                  </div>
-                ) : (
-                  <div className="space-y-8">
-                    {getUniqueSubjects(selectedBranch, selectedSemester).map((subject, idx) => (
-                      <div key={subject} className="glass-effect border-2 rounded-2xl p-8 hover:shadow-xl transition-all animate-fade-in" style={{ animationDelay: `${idx * 100}ms` }}>
-                        <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                          <div className="p-3 bg-primary/10 rounded-xl">
-                            <FileText className="w-6 h-6 text-primary" />
-                          </div>
-                          {subject}
-                        </h3>
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                          {getNotesBySubject(selectedBranch, selectedSemester, subject).map((note) => (
-                            <div key={note.id} className="group glass-effect border-2 rounded-xl p-6 hover:shadow-lg hover:border-primary transition-all hover-lift">
-                              <h4 className="font-bold mb-3 group-hover:text-primary transition">{note.title}</h4>
-                              {note.grade && (
-                                <span className="inline-block px-3 py-1 bg-primary/10 text-primary rounded-full text-sm mb-4 font-medium">
-                                  {note.grade}
-                                </span>
-                              )}
-                              <a 
-                                href={note.file_url} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-lg hover:shadow-lg transition-all font-semibold"
-                              >
-                                <Download className="w-4 h-4" />
-                                Download
-                              </a>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+        {(selectedBranch || selectedSemester || selectedSubject) && (
+          <div className="mb-8 flex items-center gap-2 text-sm flex-wrap">
+            <button onClick={() => { setSelectedBranch(""); setSelectedSemester(""); setSelectedSubject(""); resetFilters(); }} className="text-primary hover:underline">Home</button>
+            {selectedBranch && (<><ChevronRight className="w-4 h-4" /><button onClick={() => { setSelectedSemester(""); setSelectedSubject(""); resetFilters(); }} className="text-primary hover:underline">{branches.find(b => b.id === selectedBranch)?.name}</button></>)}
+            {selectedSemester && (<><ChevronRight className="w-4 h-4" /><button onClick={() => { setSelectedSubject(""); resetFilters(); }} className="text-primary hover:underline">Semester {selectedSemester}</button></>)}
+            {selectedSubject && (<><ChevronRight className="w-4 h-4" /><span className="text-foreground font-semibold">{selectedSubject}</span></>)}
           </div>
         )}
-      </div>
+
+        {loading ? (
+          <div className="flex justify-center items-center py-20"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>
+        ) : notes.length === 0 ? (
+          <div className="text-center py-12 bg-card border rounded-lg"><p className="text-muted-foreground">No notes available yet</p></div>
+        ) : !selectedBranch ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">{branches.map((branch) => (<div key={branch.id} onClick={() => setSelectedBranch(branch.id)} className="bg-card border rounded-lg p-6 cursor-pointer hover:shadow-lg transition-all hover-lift"><h3 className="text-xl font-bold mb-2">{branch.name}</h3><p className="text-muted-foreground text-sm">Click to view semesters</p></div>))}</div>
+        ) : !selectedSemester ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">{semesters.map((semester) => (<div key={semester} onClick={() => setSelectedSemester(semester)} className="bg-card border rounded-lg p-6 cursor-pointer hover:shadow-lg transition-all hover-lift text-center"><h3 className="text-2xl font-bold text-primary mb-2">Semester {semester}</h3><p className="text-muted-foreground text-sm">Click to view subjects</p></div>))}</div>
+        ) : !selectedSubject ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">{subjects.length > 0 ? subjects.map((subject) => (<div key={subject} onClick={() => setSelectedSubject(subject)} className="bg-card border rounded-lg p-6 cursor-pointer hover:shadow-lg transition-all hover-lift"><h3 className="text-lg font-bold mb-2">{subject}</h3><p className="text-muted-foreground text-sm">Click to view notes</p></div>)) : (<div className="col-span-full text-center py-12 bg-card border rounded-lg"><p className="text-muted-foreground">No subjects available for this combination</p></div>)}</div>
+        ) : (
+          <div className="space-y-6">
+            <div className="bg-card border rounded-lg p-6 space-y-4">
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1 relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" /><input type="text" placeholder="Search notes..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" /></div>
+                <div className="flex gap-2">
+                  <div className="relative"><Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" /><select value={filterGrade} onChange={(e) => setFilterGrade(e.target.value)} className="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent appearance-none bg-background"><option value="">All Grades</option>{availableGrades.map((grade) => (<option key={grade} value={grade}>{grade}</option>))}</select></div>
+                  {(searchQuery || filterGrade) && (<button onClick={resetFilters} className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground border rounded-lg">Clear</button>)}
+                </div>
+              </div>
+            </div>
+            {filteredNotes.length > 0 ? (<div className="grid gap-4">{filteredNotes.map((note) => (<div key={note.id} className="bg-card border rounded-lg p-6 hover:shadow-lg transition-all"><div className="flex items-start justify-between gap-4"><div className="flex-1"><h3 className="text-lg font-bold mb-2">{note.title}</h3><div className="flex flex-wrap gap-2 text-sm text-muted-foreground">{note.grade && (<span className="bg-primary/10 text-primary px-3 py-1 rounded-full">Grade: {note.grade}</span>)}<span className="bg-secondary/10 text-secondary px-3 py-1 rounded-full">{note.category}</span></div></div><button onClick={() => handleDownload(note.file_url, note.title)} className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"><Download className="w-5 h-5" />Download</button></div></div>))}</div>) : (<div className="text-center py-12 bg-card border rounded-lg"><p className="text-muted-foreground">{searchQuery || filterGrade ? "No notes found matching your filters" : "No notes available yet for this subject"}</p></div>)}
+          </div>
+        )}
+      </main>
       <Footer />
     </div>
   );

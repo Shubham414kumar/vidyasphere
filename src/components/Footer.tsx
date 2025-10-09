@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { BookOpen, Mail, Phone, Facebook, Twitter, Instagram, Linkedin, Youtube } from "lucide-react";
+import { Mail, Phone, Facebook, Twitter, Instagram, Linkedin, Youtube } from "lucide-react";
+import logo from "@/assets/vidyasphere-logo.png";
 
 const Footer = () => {
   return (
@@ -8,11 +9,9 @@ const Footer = () => {
         <div className="grid md:grid-cols-4 gap-8">
           {/* About Section */}
           <div className="space-y-4">
-            <Link to="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-                <BookOpen className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-bold gradient-text">EduMitra</span>
+            <Link to="/" className="flex items-center gap-3 group">
+              <img src={logo} alt="Vidyasphere" className="h-12 w-12" />
+              <span className="text-xl font-bold gradient-text">Vidyasphere</span>
             </Link>
             <p className="text-sm text-muted-foreground">
               Empowering students with quality education resources for Engineering, Class 10, and Class 12.
@@ -85,7 +84,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-border mt-8 pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; 2025 EduMitra. All rights reserved. | Made with ❤️ for students</p>
+          <p>&copy; 2025 Vidyasphere. All rights reserved. | Made with ❤️ for students</p>
         </div>
       </div>
     </footer>

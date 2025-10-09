@@ -54,7 +54,7 @@ const Index = () => {
     {
       name: "Priya Sharma",
       role: "Engineering Student",
-      content: "EduMitra transformed my learning experience. The notes are comprehensive and the live classes are incredibly helpful!",
+      content: "Vidyasphere transformed my learning experience. The notes are comprehensive and the live classes are incredibly helpful!",
       rating: 5
     },
     {
@@ -66,7 +66,7 @@ const Index = () => {
     {
       name: "Anita Singh",
       role: "Class 10 Student",
-      content: "Amazing teachers and well-structured content. I recommend EduMitra to all my friends!",
+      content: "Amazing teachers and well-structured content. I recommend Vidyasphere to all my friends!",
       rating: 5
     }
   ];
@@ -88,7 +88,7 @@ const Index = () => {
           </div>
           
           <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-slide-up">
-            Welcome to <span className="gradient-text">EduMitra</span>
+            Welcome to <span className="gradient-text">Vidyasphere</span>
           </h1>
           
           <p className="text-xl md:text-2xl mb-8 text-muted-foreground max-w-3xl mx-auto animate-slide-up" style={{animationDelay: "0.1s"}}>
@@ -172,7 +172,7 @@ const Index = () => {
               What Our <span className="gradient-text">Students</span> Say
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Join thousands of successful students who transformed their learning with EduMitra
+              Join thousands of successful students who transformed their learning with Vidyasphere
             </p>
           </div>
 
@@ -214,7 +214,7 @@ const Index = () => {
             Ready to Start Your Learning Journey?
           </h2>
           <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Join thousands of students who are already achieving their academic goals with EduMitra
+            Join thousands of students who are already achieving their academic goals with Vidyasphere
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link 

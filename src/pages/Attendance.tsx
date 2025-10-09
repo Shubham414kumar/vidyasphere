@@ -1,109 +1,142 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Calendar, TrendingUp, Plus, BarChart3 } from "lucide-react";
-import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import { Calendar, Plus, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 const Attendance = () => {
-  const navigate = useNavigate();
-  const [subject, setSubject] = useState("");
+  const [subjects, setSubjects] = useState<any[]>([]);
   const [attendance, setAttendance] = useState<any[]>([]);
+  const [newSubject, setNewSubject] = useState("");
   const [loading, setLoading] = useState(true);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [showAddSubject, setShowAddSubject] = useState(false);
 
   useEffect(() => {
-    checkAuth();
+    fetchSubjectsAndAttendance();
   }, []);
 
-  const checkAuth = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      toast.error("Please login to track attendance");
-      navigate("/auth");
-      return;
-    }
-    setUserId(user.id);
-    fetchAttendance(user.id);
-  };
-
-  const fetchAttendance = async (uid: string) => {
+  const fetchSubjectsAndAttendance = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast.error("Please login to view attendance");
+        return;
+      }
+
+      const { data: subjectsData, error: subjectsError } = await supabase
+        .from('subjects')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('name');
+
+      if (subjectsError) throw subjectsError;
+      setSubjects(subjectsData || []);
+
+      const { data: attendanceData, error: attendanceError } = await supabase
         .from('attendance')
         .select('*')
-        .eq('user_id', uid)
+        .eq('user_id', user.id)
         .order('date', { ascending: false });
-      
-      if (error) throw error;
-      setAttendance(data || []);
-    } catch (error) {
-      console.error('Error fetching attendance:', error);
-      toast.error("Failed to load attendance");
+
+      if (attendanceError) throw attendanceError;
+      setAttendance(attendanceData || []);
+    } catch (error: any) {
+      console.error('Error fetching data:', error);
+      toast.error("Failed to load data");
     } finally {
       setLoading(false);
     }
   };
 
-  const markAttendance = async (present: boolean) => {
-    if (!userId || !subject) {
+  const addSubject = async () => {
+    if (!newSubject.trim()) {
       toast.error("Please enter a subject name");
       return;
     }
 
-    const today = new Date().toISOString().split('T')[0];
-    const existing = attendance.find(a => 
-      a.date === today && 
-      a.subject.toLowerCase() === subject.toLowerCase()
-    );
-    
-    if (existing) {
-      toast.error("Attendance already marked for this subject today!");
-      return;
-    }
-
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Please login to add subjects");
+        return;
+      }
+
+      const { error } = await supabase
+        .from('subjects')
+        .insert({ name: newSubject, user_id: user.id });
+
+      if (error) throw error;
+
+      toast.success("Subject added successfully");
+      setNewSubject("");
+      setShowAddSubject(false);
+      fetchSubjectsAndAttendance();
+    } catch (error: any) {
+      console.error('Error adding subject:', error);
+      toast.error("Failed to add subject");
+    }
+  };
+
+  const deleteSubject = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('subjects')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast.success("Subject deleted successfully");
+      fetchSubjectsAndAttendance();
+    } catch (error: any) {
+      console.error('Error deleting subject:', error);
+      toast.error("Failed to delete subject");
+    }
+  };
+
+  const markAttendance = async (subjectId: string, present: boolean) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Please login to mark attendance");
+        return;
+      }
+
+      const today = new Date().toISOString().split('T')[0];
+      
+      const subject = subjects.find(s => s.id === subjectId);
+      
       const { error } = await supabase
         .from('attendance')
         .insert({
-          user_id: userId,
-          subject: subject,
+          user_id: user.id,
+          subject_id: subjectId,
+          subject: subject?.name || '',
           date: today,
-          present: present
+          present
         });
 
       if (error) throw error;
 
-      toast.success(`Marked ${present ? 'Present' : 'Absent'} for ${subject}`);
-      setSubject("");
-      fetchAttendance(userId);
-    } catch (error) {
+      toast.success("Attendance marked successfully");
+      fetchSubjectsAndAttendance();
+    } catch (error: any) {
       console.error('Error marking attendance:', error);
-      toast.error("Failed to mark attendance");
+      toast.error(error.message || "Failed to mark attendance");
     }
   };
 
-  const calculatePercentage = () => {
-    if (attendance.length === 0) return 0;
-    const present = attendance.filter(a => a.present).length;
-    return ((present / attendance.length) * 100).toFixed(2);
+  const getSubjectStats = (subjectId: string) => {
+    const subjectAttendance = attendance.filter(a => a.subject_id === subjectId);
+    const total = subjectAttendance.length;
+    const present = subjectAttendance.filter(a => a.present).length;
+    const percentage = total > 0 ? ((present / total) * 100).toFixed(1) : '0';
+    
+    return { total, present, percentage };
   };
-
-  const getSubjectStats = () => {
-    const stats: { [key: string]: { total: number; present: number } } = {};
-    attendance.forEach(a => {
-      if (!stats[a.subject]) {
-        stats[a.subject] = { total: 0, present: 0 };
-      }
-      stats[a.subject].total++;
-      if (a.present) stats[a.subject].present++;
-    });
-    return stats;
-  };
-
-  const subjectStats = getSubjectStats();
 
   if (loading) {
     return (
@@ -114,121 +147,117 @@ const Attendance = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-primary/5 to-secondary/5">
       <Navigation />
-      <main className="flex-1 container mx-auto px-4 py-12">
+      <main className="flex-1 container mx-auto px-4 py-12 mt-16">
         <div className="text-center mb-12 animate-fade-in">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 gradient-text">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 gradient-text flex items-center justify-center gap-3">
+            <Calendar className="w-10 h-10" />
             Attendance Tracker
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Track your attendance and maintain your academic performance
+            Track your attendance and monitor your progress
           </p>
         </div>
 
         <div className="max-w-4xl mx-auto space-y-6">
-          {/* Mark Attendance Card */}
-          <div className="bg-card border rounded-lg shadow-lg p-8 animate-slide-up">
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              <Plus className="w-6 h-6 text-primary" />
-              Mark Today's Attendance
-            </h2>
-            <div className="space-y-4">
-              <input
-                type="text"
-                placeholder="Enter Subject Name"
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-              />
-              <div className="flex gap-4">
-                <button
-                  onClick={() => markAttendance(true)}
-                  className="flex-1 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-semibold"
-                  disabled={!subject}
-                >
-                  ✓ Present
-                </button>
-                <button
-                  onClick={() => markAttendance(false)}
-                  className="flex-1 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-semibold"
-                  disabled={!subject}
-                >
-                  ✗ Absent
-                </button>
-              </div>
-            </div>
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-bold">Your Subjects</h2>
+            <button
+              onClick={() => setShowAddSubject(!showAddSubject)}
+              className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              <Plus className="w-5 h-5" />
+              Add Subject
+            </button>
           </div>
 
-          {/* Overall Statistics */}
-          <div className="bg-card border rounded-lg shadow-lg p-8 animate-slide-up">
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              <TrendingUp className="w-6 h-6 text-primary" />
-              Overall Statistics
-            </h2>
-            <div className="text-center">
-              <p className="text-6xl font-bold text-primary mb-2">{calculatePercentage()}%</p>
-              <p className="text-muted-foreground text-lg mb-6">Overall Attendance</p>
-              <div className="grid grid-cols-2 gap-4 text-center">
-                <div className="bg-primary/10 rounded-lg p-4">
-                  <p className="text-3xl font-bold text-primary">{attendance.length}</p>
-                  <p className="text-sm text-muted-foreground">Total Classes</p>
-                </div>
-                <div className="bg-green-500/10 rounded-lg p-4">
-                  <p className="text-3xl font-bold text-green-600">
-                    {attendance.filter(a => a.present).length}
-                  </p>
-                  <p className="text-sm text-muted-foreground">Days Present</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Subject-wise Statistics */}
-          {Object.keys(subjectStats).length > 0 && (
-            <div className="bg-card border rounded-lg shadow-lg p-8 animate-slide-up">
-              <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                <BarChart3 className="w-6 h-6 text-primary" />
-                Subject-wise Breakdown
-              </h2>
-              <div className="space-y-4">
-                {Object.entries(subjectStats).map(([subject, stats]) => {
-                  const percentage = ((stats.present / stats.total) * 100).toFixed(1);
-                  return (
-                    <div key={subject} className="border rounded-lg p-4">
-                      <div className="flex justify-between items-center mb-2">
-                        <h3 className="font-bold text-lg">{subject}</h3>
-                        <span className={`text-lg font-bold ${
-                          parseFloat(percentage) >= 75 ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                          {percentage}%
-                        </span>
-                      </div>
-                      <div className="w-full bg-muted rounded-full h-2">
-                        <div
-                          className={`h-2 rounded-full transition-all ${
-                            parseFloat(percentage) >= 75 ? 'bg-green-500' : 'bg-red-500'
-                          }`}
-                          style={{ width: `${percentage}%` }}
-                        />
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-2">
-                        {stats.present} / {stats.total} classes attended
-                      </p>
-                    </div>
-                  );
-                })}
+          {showAddSubject && (
+            <div className="bg-card/80 backdrop-blur-sm border rounded-xl p-6">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newSubject}
+                  onChange={(e) => setNewSubject(e.target.value)}
+                  placeholder="Enter subject name"
+                  className="flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  onKeyPress={(e) => e.key === 'Enter' && addSubject()}
+                />
+                <button
+                  onClick={addSubject}
+                  className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
+                >
+                  Add
+                </button>
+                <button
+                  onClick={() => {
+                    setShowAddSubject(false);
+                    setNewSubject("");
+                  }}
+                  className="px-6 py-2 bg-secondary text-white rounded-lg hover:bg-secondary/90"
+                >
+                  Cancel
+                </button>
               </div>
             </div>
           )}
 
-          {/* Info Card */}
-          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
-            <p className="text-sm text-yellow-800 dark:text-yellow-200">
-              <strong>Note:</strong> You can mark attendance only once per day for each subject. 
-              All data is stored securely and privately. Maintain at least 75% attendance for academic requirements.
-            </p>
-          </div>
+          {subjects.length === 0 ? (
+            <div className="text-center py-12 bg-card/80 backdrop-blur-sm border rounded-xl">
+              <p className="text-muted-foreground">No subjects added yet. Click "Add Subject" to get started.</p>
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {subjects.map((subject) => {
+                const stats = getSubjectStats(subject.id);
+                return (
+                  <div
+                    key={subject.id}
+                    className="bg-card/80 backdrop-blur-sm border rounded-xl p-6 hover:shadow-xl transition-all duration-300"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex-1">
+                        <h3 className="text-xl font-bold mb-2">{subject.name}</h3>
+                        <div className="flex gap-4 text-sm">
+                          <span className="text-muted-foreground">
+                            Total: <span className="font-semibold text-foreground">{stats.total}</span>
+                          </span>
+                          <span className="text-muted-foreground">
+                            Present: <span className="font-semibold text-green-600">{stats.present}</span>
+                          </span>
+                          <span className="text-muted-foreground">
+                            Percentage: <span className={`font-semibold ${parseFloat(stats.percentage) >= 75 ? 'text-green-600' : 'text-red-600'}`}>
+                              {stats.percentage}%
+                            </span>
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => deleteSubject(subject.id)}
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => markAttendance(subject.id, true)}
+                        className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                      >
+                        Present
+                      </button>
+                      <button
+                        onClick={() => markAttendance(subject.id, false)}
+                        className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                      >
+                        Absent
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </main>
       <Footer />

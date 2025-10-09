@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
-import { BookOpen, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import logo from "@/assets/vidyasphere-logo.png";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,11 +24,9 @@ const Navigation = () => {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
-              <BookOpen className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-2xl font-bold gradient-text">EduMitra</span>
+          <Link to="/" className="flex items-center gap-3 group">
+            <img src={logo} alt="Vidyasphere" className="h-12 w-12 group-hover:scale-110 transition-transform" />
+            <span className="text-2xl font-bold gradient-text">Vidyasphere</span>
           </Link>
 
           {/* Desktop Navigation */}

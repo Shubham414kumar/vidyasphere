@@ -3,7 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import { Download, ChevronRight, Search, Filter, Eye, Edit2, Trash2 } from "lucide-react";
+import { Download, ChevronRight, Search, Filter, Eye, Edit2, Trash2, Upload } from "lucide-react";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 const Notes = () => {
@@ -143,6 +144,15 @@ const Notes = () => {
         <div className="text-center mb-12 animate-fade-in">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 gradient-text">Study Notes</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Access comprehensive study notes organized by branch, semester, and subject</p>
+          <div className="mt-6">
+            <Link 
+              to="/upload-content?type=note" 
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-full hover:shadow-xl transition-all font-semibold"
+            >
+              <Upload className="w-5 h-5" />
+              Upload Notes
+            </Link>
+          </div>
         </div>
 
         {(selectedBranch || selectedSemester || selectedSubject) && (

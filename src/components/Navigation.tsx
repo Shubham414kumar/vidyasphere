@@ -1,11 +1,25 @@
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { Menu, X, User } from "lucide-react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/vidyasphere-logo.png";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsLoggedIn(!!session);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const navLinks = [
     { to: "/courses", label: "Courses" },
@@ -47,12 +61,22 @@ const Navigation = () => {
                 )}
               </Link>
             ))}
-            <Link
-              to="/auth"
-              className="px-6 py-2 bg-gradient-to-r from-primary to-secondary text-white rounded-full hover:shadow-lg transition-all font-medium"
-            >
-              Login
-            </Link>
+            {isLoggedIn ? (
+              <Link
+                to="/profile"
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary to-secondary text-white rounded-full hover:shadow-lg transition-all font-medium"
+              >
+                <User className="w-4 h-4" />
+                Profile
+              </Link>
+            ) : (
+              <Link
+                to="/auth"
+                className="px-6 py-2 bg-gradient-to-r from-primary to-secondary text-white rounded-full hover:shadow-lg transition-all font-medium"
+              >
+                Login
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -82,13 +106,24 @@ const Navigation = () => {
                   {link.label}
                 </Link>
               ))}
-              <Link
-                to="/auth"
-                onClick={() => setIsOpen(false)}
-                className="mx-4 mt-2 px-4 py-2 bg-gradient-to-r from-primary to-secondary text-white rounded-full text-center font-medium"
-              >
-                Login
-              </Link>
+              {isLoggedIn ? (
+                <Link
+                  to="/profile"
+                  onClick={() => setIsOpen(false)}
+                  className="mx-4 mt-2 px-4 py-2 bg-gradient-to-r from-primary to-secondary text-white rounded-full text-center font-medium flex items-center justify-center gap-2"
+                >
+                  <User className="w-4 h-4" />
+                  Profile
+                </Link>
+              ) : (
+                <Link
+                  to="/auth"
+                  onClick={() => setIsOpen(false)}
+                  className="mx-4 mt-2 px-4 py-2 bg-gradient-to-r from-primary to-secondary text-white rounded-full text-center font-medium"
+                >
+                  Login
+                </Link>
+              )}
             </div>
           </div>
         )}

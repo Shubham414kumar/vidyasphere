@@ -3,7 +3,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import { Download, ChevronRight, Search, Filter, Eye, Edit2, Trash2 } from "lucide-react";
+import { Download, ChevronRight, Search, Filter, Eye, Edit2, Trash2, Upload } from "lucide-react";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 const Batches = () => {
@@ -147,6 +148,15 @@ const Batches = () => {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Access previous year question papers organized by branch, semester, and subject
           </p>
+          <div className="mt-6">
+            <Link 
+              to="/upload-content?type=pyq" 
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-full hover:shadow-xl transition-all font-semibold"
+            >
+              <Upload className="w-5 h-5" />
+              Upload PYQ
+            </Link>
+          </div>
         </div>
 
         {(selectedBranch || selectedSemester || selectedSubject) && (

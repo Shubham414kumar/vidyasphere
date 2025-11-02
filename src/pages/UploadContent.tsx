@@ -1,18 +1,24 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { Upload } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
 
 const UploadContent = () => {
-  const [type, setType] = useState<"note" | "pyq">("note");
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const [type, setType] = useState<"note" | "pyq">(
+    (searchParams.get("type") as "note" | "pyq") || "note"
+  );
   const [title, setTitle] = useState("");
   const [branch, setBranch] = useState("");
   const [semester, setSemester] = useState("");
   const [subject, setSubject] = useState("");
+  const [year, setYear] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
-  const navigate = useNavigate();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -69,7 +75,8 @@ const UploadContent = () => {
             semester,
             subject,
             file_url: publicUrl,
-            uploaded_by: user.id
+            uploaded_by: user.id,
+            category: "study-material",
           });
 
         if (insertError) throw insertError;
@@ -81,8 +88,10 @@ const UploadContent = () => {
             branch,
             semester,
             subject,
+            year: year ? parseInt(year) : null,
             file_url: publicUrl,
-            uploaded_by: user.id
+            uploaded_by: user.id,
+            category: "previous-year",
           });
 
         if (insertError) throw insertError;
@@ -93,7 +102,9 @@ const UploadContent = () => {
       setBranch("");
       setSemester("");
       setSubject("");
+      setYear("");
       setFile(null);
+      navigate(type === "note" ? "/notes" : "/batches");
       
     } catch (error: any) {
       toast.error(error.message || "Failed to upload");
@@ -103,17 +114,13 @@ const UploadContent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="bg-white shadow-sm py-4">
-        <div className="container mx-auto px-4">
-          <Link to="/" className="text-2xl font-bold text-primary">← Back to Home</Link>
-        </div>
-      </nav>
-      <div className="container mx-auto px-4 py-12">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-primary/5 to-secondary/5">
+      <Navigation />
+      <main className="flex-1 container mx-auto px-4 py-12 mt-16">
         <div className="max-w-2xl mx-auto">
-          <div className="bg-white rounded-lg shadow-lg p-8">
-            <h1 className="text-3xl font-bold mb-6 flex items-center gap-2">
-              <Upload className="w-8 h-8 text-primary" />
+          <div className="bg-card/80 backdrop-blur-sm border rounded-2xl p-8 shadow-lg animate-fade-in">
+            <h1 className="text-3xl font-bold mb-6 flex items-center gap-2 gradient-text">
+              <Upload className="w-8 h-8" />
               Upload Content
             </h1>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -121,14 +128,22 @@ const UploadContent = () => {
                 <button
                   type="button"
                   onClick={() => setType("note")}
-                  className={`flex-1 py-2 rounded-lg ${type === "note" ? "bg-primary text-white" : "bg-gray-200"}`}
+                  className={`flex-1 py-3 rounded-lg font-semibold transition-all ${
+                    type === "note"
+                      ? "bg-gradient-to-r from-primary to-secondary text-white shadow-lg"
+                      : "bg-muted text-foreground hover:bg-muted/80"
+                  }`}
                 >
                   Notes
                 </button>
                 <button
                   type="button"
                   onClick={() => setType("pyq")}
-                  className={`flex-1 py-2 rounded-lg ${type === "pyq" ? "bg-primary text-white" : "bg-gray-200"}`}
+                  className={`flex-1 py-3 rounded-lg font-semibold transition-all ${
+                    type === "pyq"
+                      ? "bg-gradient-to-r from-primary to-secondary text-white shadow-lg"
+                      : "bg-muted text-foreground hover:bg-muted/80"
+                  }`}
                 >
                   PYQ
                 </button>
@@ -138,48 +153,54 @@ const UploadContent = () => {
                 placeholder="Title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg"
+                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
                 required
               />
               <select
                 value={branch}
                 onChange={(e) => setBranch(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg"
+                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
                 required
               >
                 <option value="">Select Branch</option>
-                <option value="computer-science">Computer Science</option>
-                <option value="civil-engineering">Civil Engineering</option>
-                <option value="mechanical-engineering">Mechanical Engineering</option>
-                <option value="ece">Electronics & Communication</option>
-                <option value="electrical-engineering">Electrical Engineering</option>
-                <option value="chemical-engineering">Chemical Engineering</option>
+                <option value="Computer Science">Computer Science</option>
+                <option value="Civil Engineering">Civil Engineering</option>
+                <option value="Mechanical Engineering">Mechanical Engineering</option>
+                <option value="Electronics & Communication">Electronics & Communication</option>
+                <option value="Electrical Engineering">Electrical Engineering</option>
+                <option value="Chemical Engineering">Chemical Engineering</option>
               </select>
               <select
                 value={semester}
                 onChange={(e) => setSemester(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg"
+                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
                 required
               >
                 <option value="">Select Semester</option>
-                <option value="1">Semester 1</option>
-                <option value="2">Semester 2</option>
-                <option value="3">Semester 3</option>
-                <option value="4">Semester 4</option>
-                <option value="5">Semester 5</option>
-                <option value="6">Semester 6</option>
-                <option value="7">Semester 7</option>
-                <option value="8">Semester 8</option>
+                {[1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
+                  <option key={sem} value={sem.toString()}>
+                    Semester {sem}
+                  </option>
+                ))}
               </select>
               <input
                 type="text"
                 placeholder="Subject"
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg"
+                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
                 required
               />
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+              {type === "pyq" && (
+                <input
+                  type="number"
+                  placeholder="Year (e.g., 2023)"
+                  value={year}
+                  onChange={(e) => setYear(e.target.value)}
+                  className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
+                />
+              )}
+              <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary transition-colors">
                 <input
                   type="file"
                   accept="application/pdf"
@@ -188,7 +209,7 @@ const UploadContent = () => {
                   id="file-upload"
                 />
                 <label htmlFor="file-upload" className="cursor-pointer">
-                  <Upload className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                  <Upload className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
                   <p className="text-muted-foreground">
                     {file ? file.name : "Click to upload PDF file"}
                   </p>
@@ -197,14 +218,15 @@ const UploadContent = () => {
               <button
                 type="submit"
                 disabled={uploading}
-                className="w-full py-3 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50"
+                className="w-full py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-lg hover:shadow-xl transition-all disabled:opacity-50 font-semibold"
               >
                 {uploading ? "Uploading..." : `Upload ${type === "note" ? "Note" : "PYQ"}`}
               </button>
             </form>
           </div>
         </div>
-      </div>
+      </main>
+      <Footer />
     </div>
   );
 };

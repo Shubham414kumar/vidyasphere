@@ -17,6 +17,7 @@ import Donate from "./pages/Donate";
 import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import UploadContent from "./pages/UploadContent";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -40,7 +41,8 @@ const App = () => (
             <Route path="/donate" element={<Donate />} />
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
-            <Route path="/upload" element={<UploadContent />} />
+            <Route path="/upload-content" element={<UploadContent />} />
+            <Route path="/profile" element={<Profile />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>

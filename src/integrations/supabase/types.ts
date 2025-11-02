@@ -281,6 +281,7 @@ export type Database = {
           subject: string | null
           title: string
           uploaded_by: string | null
+          year: number | null
         }
         Insert: {
           branch?: string | null
@@ -293,6 +294,7 @@ export type Database = {
           subject?: string | null
           title: string
           uploaded_by?: string | null
+          year?: number | null
         }
         Update: {
           branch?: string | null
@@ -305,6 +307,7 @@ export type Database = {
           subject?: string | null
           title?: string
           uploaded_by?: string | null
+          year?: number | null
         }
         Relationships: [
           {

@@ -71,13 +71,14 @@ const UploadContent = () => {
           .from("notes")
           .insert({
             title,
-            branch,
-            semester,
-            subject,
-            file_url: publicUrl,
-            uploaded_by: user.id,
-            category: "study-material",
-          });
+              branch,
+              semester,
+              subject,
+              year: year ? parseInt(year) : null,
+              file_url: publicUrl,
+              uploaded_by: user.id,
+              category: "study-material",
+            });
 
         if (insertError) throw insertError;
       } else {
@@ -191,15 +192,14 @@ const UploadContent = () => {
                 className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
                 required
               />
-              {type === "pyq" && (
-                <input
-                  type="number"
-                  placeholder="Year (e.g., 2023)"
-                  value={year}
-                  onChange={(e) => setYear(e.target.value)}
-                  className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
-                />
-              )}
+              <input
+                type="number"
+                placeholder="Year (e.g., 2023)"
+                value={year}
+                onChange={(e) => setYear(e.target.value)}
+                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
+                required
+              />
               <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary transition-colors">
                 <input
                   type="file"

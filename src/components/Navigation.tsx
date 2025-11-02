@@ -49,15 +49,15 @@ const Navigation = () => {
               <Link
                 key={link.to}
                 to={link.to}
-                className={`relative font-medium transition-colors ${
+                className={`relative font-medium transition-all ${
                   isActive(link.to)
-                    ? "text-primary"
+                    ? "text-primary drop-shadow-[0_0_8px_hsl(var(--primary))]"
                     : "text-foreground hover:text-primary"
                 }`}
               >
                 {link.label}
                 {isActive(link.to) && (
-                  <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-primary to-secondary rounded-full" />
+                  <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-primary to-secondary rounded-full shadow-[0_0_8px_hsl(var(--primary))]" />
                 )}
               </Link>
             ))}
@@ -97,9 +97,9 @@ const Navigation = () => {
                   key={link.to}
                   to={link.to}
                   onClick={() => setIsOpen(false)}
-                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
                     isActive(link.to)
-                      ? "bg-primary/10 text-primary"
+                      ? "bg-primary/20 text-primary drop-shadow-[0_0_8px_hsl(var(--primary))]"
                       : "hover:bg-muted text-foreground"
                   }`}
                 >

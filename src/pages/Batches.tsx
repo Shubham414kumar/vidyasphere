@@ -1,357 +1,354 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { FileText, Search, Upload, Download, Edit, Trash2, Eye, ChevronRight } from "lucide-react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import { Download, ChevronRight, Search, Filter, Eye, Edit2, Trash2, Upload } from "lucide-react";
-import { Link } from "react-router-dom";
-import { toast } from "sonner";
+
+type PYQ = {
+  id: string;
+  title: string;
+  branch: string;
+  semester: string;
+  year: number;
+  subject: string;
+  file_url: string;
+  category: string;
+  uploaded_by: string;
+};
 
 const Batches = () => {
-  const [selectedBranch, setSelectedBranch] = useState("");
-  const [selectedSemester, setSelectedSemester] = useState("");
-  const [selectedSubject, setSelectedSubject] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filterYear, setFilterYear] = useState("");
+  const navigate = useNavigate();
+  const [pyqs, setPyqs] = useState<PYQ[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
-  const [editingPyq, setEditingPyq] = useState<any>(null);
-  const queryClient = useQueryClient();
+  
+  // Navigation state
+  const [selectedBranch, setSelectedBranch] = useState<string | null>(null);
+  const [selectedSemester, setSelectedSemester] = useState<string | null>(null);
+  const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
 
-  // Check if user is admin
-  useQuery({
-    queryKey: ['userRole'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
-      
+  const branches = [
+    "Computer Science",
+    "Civil Engineering",
+    "Mechanical Engineering",
+    "Electronics & Communication",
+    "Electrical Engineering",
+    "Chemical Engineering",
+  ];
+
+  const semesters = ["1", "2", "3", "4", "5", "6", "7", "8"];
+  const years = [2020, 2021, 2022, 2023, 2024, 2025];
+
+  useEffect(() => {
+    checkAdminStatus();
+    fetchPYQs();
+  }, []);
+
+  const checkAdminStatus = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
       const { data } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user.id)
-        .single();
-      
-      setIsAdmin(data?.role === 'admin');
-      return data;
-    },
-  });
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      setIsAdmin(!!data);
+    }
+  };
 
-  const { data: pyqs, isLoading } = useQuery({
-    queryKey: ['pyqs'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('pyqs')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.from('pyqs').delete().eq('id', id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['pyqs'] });
-      toast.success("PYQ deleted successfully");
-    },
-    onError: () => toast.error("Failed to delete PYQ"),
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: async ({ id, title, year }: { id: string; title: string; year: number }) => {
-      const { error } = await supabase
-        .from('pyqs')
-        .update({ title, year })
-        .eq('id', id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['pyqs'] });
-      toast.success("PYQ updated successfully");
-      setEditingPyq(null);
-    },
-    onError: () => toast.error("Failed to update PYQ"),
-  });
-
-  const branches = Array.from(new Set(pyqs?.map(p => p.branch).filter(Boolean))) as string[];
-  const semesters = Array.from(
-    new Set(pyqs?.filter(p => p.branch === selectedBranch).map(p => p.semester).filter(Boolean))
-  ) as string[];
-  const subjects = Array.from(
-    new Set(
-      pyqs?.filter(p => p.branch === selectedBranch && p.semester === selectedSemester)
-        .map(p => p.subject)
-        .filter(Boolean)
-    )
-  ) as string[];
-
-  const filteredPyqs = pyqs?.filter(p => 
-    p.branch === selectedBranch && 
-    p.semester === selectedSemester && 
-    p.subject === selectedSubject &&
-    (searchQuery === "" || p.title.toLowerCase().includes(searchQuery.toLowerCase())) &&
-    (filterYear === "" || p.year?.toString() === filterYear)
-  );
-
-  const availableYears = Array.from(
-    new Set(pyqs?.map(p => p.year).filter(Boolean))
-  ).sort((a, b) => (b as number) - (a as number));
-
-  const handleDownload = async (fileUrl: string, title: string) => {
+  const fetchPYQs = async () => {
     try {
-      const response = await fetch(fileUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${title}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      toast.success("Download started!");
-    } catch (error) {
-      toast.error("Failed to download file");
+      const { data, error } = await supabase
+        .from("pyqs")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setPyqs(data || []);
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleView = (fileUrl: string) => {
-    window.open(fileUrl, '_blank');
-  };
-
-  const resetFilters = () => {
-    setSearchQuery("");
-    setFilterYear("");
-  };
-
-  const handleSaveEdit = () => {
-    if (editingPyq) {
-      updateMutation.mutate({
-        id: editingPyq.id,
-        title: editingPyq.title,
-        year: editingPyq.year
-      });
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this PYQ?")) return;
+    
+    try {
+      const { error } = await supabase.from("pyqs").delete().eq("id", id);
+      if (error) throw error;
+      toast.success("PYQ deleted successfully");
+      fetchPYQs();
+    } catch (error: any) {
+      toast.error(error.message);
     }
+  };
+
+  const getUniqueValues = (key: keyof PYQ) => {
+    const values = pyqs
+      .filter(pyq => {
+        if (selectedBranch && pyq.branch !== selectedBranch) return false;
+        if (selectedSemester && pyq.semester !== selectedSemester) return false;
+        if (selectedYear && pyq.year !== selectedYear) return false;
+        if (selectedSubject && pyq.subject !== selectedSubject) return false;
+        return true;
+      })
+      .map(pyq => pyq[key])
+      .filter(Boolean);
+    return Array.from(new Set(values)).sort();
+  };
+
+  const filteredPYQs = pyqs.filter(pyq => {
+    if (!selectedBranch || !selectedSemester || !selectedYear || !selectedSubject) return false;
+    
+    const matchesFilters = 
+      pyq.branch === selectedBranch &&
+      pyq.semester === selectedSemester &&
+      pyq.year === selectedYear &&
+      pyq.subject === selectedSubject;
+    
+    const matchesSearch = pyq.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      pyq.subject.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    return matchesFilters && matchesSearch;
+  });
+
+  const resetNavigation = () => {
+    setSelectedBranch(null);
+    setSelectedSemester(null);
+    setSelectedYear(null);
+    setSelectedSubject(null);
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-primary/5 to-secondary/5">
       <Navigation />
       <main className="flex-1 container mx-auto px-4 py-12 mt-16">
-        <div className="text-center mb-12 animate-fade-in">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 gradient-text">
-            Previous Year Questions
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Access previous year question papers organized by branch, semester, and subject
-          </p>
-          <div className="mt-6">
-            <Link 
-              to="/upload-content?type=pyq" 
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-full hover:shadow-xl transition-all font-semibold"
-            >
-              <Upload className="w-5 h-5" />
-              Upload PYQ
-            </Link>
-          </div>
-        </div>
-
-        {(selectedBranch || selectedSemester || selectedSubject) && (
-          <div className="mb-8 flex items-center gap-2 text-sm flex-wrap bg-card/50 backdrop-blur-sm p-4 rounded-lg border">
-            <button onClick={() => { setSelectedBranch(""); setSelectedSemester(""); setSelectedSubject(""); resetFilters(); }} className="text-primary hover:underline font-medium">Home</button>
-            {selectedBranch && (<><ChevronRight className="w-4 h-4 text-muted-foreground" /><button onClick={() => { setSelectedSemester(""); setSelectedSubject(""); resetFilters(); }} className="text-primary hover:underline font-medium">{selectedBranch}</button></>)}
-            {selectedSemester && (<><ChevronRight className="w-4 h-4 text-muted-foreground" /><button onClick={() => { setSelectedSubject(""); resetFilters(); }} className="text-primary hover:underline font-medium">Semester {selectedSemester}</button></>)}
-            {selectedSubject && (<><ChevronRight className="w-4 h-4 text-muted-foreground" /><span className="text-foreground font-semibold">{selectedSubject}</span></>)}
-          </div>
-        )}
-
-        {isLoading ? (
-          <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          </div>
-        ) : !selectedBranch ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {branches.map((branch) => (
-              <div 
-                key={branch} 
-                onClick={() => setSelectedBranch(branch)} 
-                className="group bg-card/80 backdrop-blur-sm border rounded-xl p-8 cursor-pointer hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:border-primary/50"
+        <div className="max-w-6xl mx-auto">
+          <div className="bg-card/80 backdrop-blur-sm border rounded-2xl p-8 shadow-lg animate-fade-in">
+            <div className="flex items-center justify-between mb-6">
+              <h1 className="text-3xl font-bold flex items-center gap-2 gradient-text">
+                <FileText className="w-8 h-8" />
+                Previous Year Questions
+              </h1>
+              <button
+                onClick={() => navigate("/upload-content?type=pyq")}
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary to-secondary text-white rounded-lg hover:shadow-xl transition-all"
               >
-                <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <span className="text-2xl text-white font-bold">{branch.charAt(0).toUpperCase()}</span>
-                </div>
-                <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">{branch}</h3>
-                <p className="text-muted-foreground text-sm">Click to view semesters</p>
-              </div>
-            ))}
-          </div>
-        ) : !selectedSemester ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {semesters.sort().map((semester) => (
-              <div 
-                key={semester} 
-                onClick={() => setSelectedSemester(semester)} 
-                className="group bg-card/80 backdrop-blur-sm border rounded-xl p-8 cursor-pointer hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 text-center hover:border-primary/50"
-              >
-                <div className="text-5xl font-bold gradient-text mb-2">{semester}</div>
-                <h3 className="text-lg font-semibold mb-1">Semester</h3>
-                <p className="text-muted-foreground text-sm">Click to view subjects</p>
-              </div>
-            ))}
-          </div>
-        ) : !selectedSubject ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {subjects.map((subject) => (
-              <div 
-                key={subject} 
-                onClick={() => setSelectedSubject(subject)} 
-                className="group bg-card/80 backdrop-blur-sm border rounded-xl p-6 cursor-pointer hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:border-primary/50"
-              >
-                <h3 className="text-lg font-bold mb-2 group-hover:text-primary transition-colors">{subject}</h3>
-                <p className="text-muted-foreground text-sm">Click to view question papers</p>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="space-y-6">
-            <div className="bg-card/80 backdrop-blur-sm border rounded-xl p-6 shadow-lg">
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <input 
-                    type="text" 
-                    placeholder="Search question papers..." 
-                    value={searchQuery} 
-                    onChange={(e) => setSearchQuery(e.target.value)} 
-                    className="w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <div className="relative">
-                    <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                    <select 
-                      value={filterYear} 
-                      onChange={(e) => setFilterYear(e.target.value)} 
-                      className="pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent appearance-none bg-background"
-                    >
-                      <option value="">All Years</option>
-                      {availableYears.map((year) => (
-                        <option key={year} value={year}>{year}</option>
-                      ))}
-                    </select>
-                  </div>
-                  {(searchQuery || filterYear) && (
-                    <button 
-                      onClick={resetFilters} 
-                      className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground border rounded-lg hover:bg-accent transition-colors"
-                    >
-                      Clear
-                    </button>
-                  )}
-                </div>
-              </div>
+                <Upload className="w-4 h-4" />
+                Upload PYQ
+              </button>
             </div>
-            
-            {filteredPyqs && filteredPyqs.length > 0 ? (
-              <div className="grid gap-4">
-                {filteredPyqs.map((pyq) => (
-                  <div 
-                    key={pyq.id} 
-                    className="bg-card/80 backdrop-blur-sm border rounded-xl p-6 hover:shadow-xl transition-all duration-300"
-                  >
-                    {editingPyq?.id === pyq.id ? (
-                      <div className="space-y-4">
-                        <input
-                          type="text"
-                          value={editingPyq.title}
-                          onChange={(e) => setEditingPyq({ ...editingPyq, title: e.target.value })}
-                          className="w-full px-4 py-2 border rounded-lg"
-                        />
-                        <input
-                          type="number"
-                          value={editingPyq.year}
-                          onChange={(e) => setEditingPyq({ ...editingPyq, year: parseInt(e.target.value) })}
-                          className="w-full px-4 py-2 border rounded-lg"
-                        />
-                        <div className="flex gap-2">
-                          <button
-                            onClick={handleSaveEdit}
-                            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
-                          >
-                            Save
-                          </button>
-                          <button
-                            onClick={() => setEditingPyq(null)}
-                            className="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary/90"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </div>
+
+            {/* Breadcrumb Navigation */}
+            <div className="mb-6 flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+              <button onClick={resetNavigation} className="hover:text-primary transition-colors">
+                All Branches
+              </button>
+              {selectedBranch && (
+                <>
+                  <ChevronRight className="w-4 h-4" />
+                  <button onClick={() => { setSelectedSemester(null); setSelectedYear(null); setSelectedSubject(null); }} className="hover:text-primary transition-colors">
+                    {selectedBranch}
+                  </button>
+                </>
+              )}
+              {selectedSemester && (
+                <>
+                  <ChevronRight className="w-4 h-4" />
+                  <button onClick={() => { setSelectedYear(null); setSelectedSubject(null); }} className="hover:text-primary transition-colors">
+                    Semester {selectedSemester}
+                  </button>
+                </>
+              )}
+              {selectedYear && (
+                <>
+                  <ChevronRight className="w-4 h-4" />
+                  <button onClick={() => setSelectedSubject(null)} className="hover:text-primary transition-colors">
+                    Year {selectedYear}
+                  </button>
+                </>
+              )}
+              {selectedSubject && (
+                <>
+                  <ChevronRight className="w-4 h-4" />
+                  <span className="text-primary font-semibold">{selectedSubject}</span>
+                </>
+              )}
+            </div>
+
+            {loading ? (
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+                <p className="mt-4 text-muted-foreground">Loading PYQs...</p>
+              </div>
+            ) : (
+              <>
+                {/* Branch Selection */}
+                {!selectedBranch && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {branches.map((branch) => (
+                      <button
+                        key={branch}
+                        onClick={() => setSelectedBranch(branch)}
+                        className="p-6 border rounded-xl hover:border-primary hover:shadow-lg transition-all text-left group"
+                      >
+                        <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">
+                          {branch}
+                        </h3>
+                        <p className="text-sm text-muted-foreground mt-2">
+                          Click to view semesters
+                        </p>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Semester Selection */}
+                {selectedBranch && !selectedSemester && (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {semesters.map((sem) => (
+                      <button
+                        key={sem}
+                        onClick={() => setSelectedSemester(sem)}
+                        className="p-6 border rounded-xl hover:border-primary hover:shadow-lg transition-all group"
+                      >
+                        <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">
+                          Semester {sem}
+                        </h3>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Year Selection */}
+                {selectedBranch && selectedSemester && !selectedYear && (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {years.map((year) => (
+                      <button
+                        key={year}
+                        onClick={() => setSelectedYear(year)}
+                        className="p-6 border rounded-xl hover:border-primary hover:shadow-lg transition-all group"
+                      >
+                        <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">
+                          Year {year}
+                        </h3>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Subject Selection */}
+                {selectedBranch && selectedSemester && selectedYear && !selectedSubject && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {getUniqueValues("subject").length > 0 ? (
+                      getUniqueValues("subject").map((subject) => (
+                        <button
+                          key={subject}
+                          onClick={() => setSelectedSubject(subject as string)}
+                          className="p-6 border rounded-xl hover:border-primary hover:shadow-lg transition-all text-left group"
+                        >
+                          <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">
+                            {subject}
+                          </h3>
+                        </button>
+                      ))
                     ) : (
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                          <h3 className="text-lg font-bold mb-2">{pyq.title}</h3>
-                          <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-                            {pyq.year && (
-                              <span className="bg-primary/10 text-primary px-3 py-1 rounded-full font-medium">
-                                Year: {pyq.year}
-                              </span>
-                            )}
-                            <span className="bg-secondary/10 text-secondary px-3 py-1 rounded-full font-medium">
-                              {pyq.category}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex gap-2 flex-wrap">
-                          <button
-                            onClick={() => handleView(pyq.file_url)}
-                            className="flex items-center gap-2 px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary/90 transition-colors"
-                          >
-                            <Eye className="w-5 h-5" />
-                            View
-                          </button>
-                          <button
-                            onClick={() => handleDownload(pyq.file_url, pyq.title)}
-                            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
-                          >
-                            <Download className="w-5 h-5" />
-                            Download
-                          </button>
-                          {isAdmin && (
-                            <>
-                              <button
-                                onClick={() => setEditingPyq(pyq)}
-                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
-                              >
-                                <Edit2 className="w-5 h-5" />
-                              </button>
-                              <button
-                                onClick={() => deleteMutation.mutate(pyq.id)}
-                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
-                              >
-                                <Trash2 className="w-5 h-5" />
-                              </button>
-                            </>
-                          )}
-                        </div>
+                      <div className="col-span-full text-center py-12 text-muted-foreground">
+                        No subjects available for this selection
                       </div>
                     )}
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12 bg-card/80 backdrop-blur-sm border rounded-xl">
-                <p className="text-muted-foreground">
-                  {searchQuery || filterYear ? "No question papers found matching your filters" : "No question papers available yet"}
-                </p>
-              </div>
+                )}
+
+                {/* PYQs List */}
+                {selectedBranch && selectedSemester && selectedYear && selectedSubject && (
+                  <>
+                    <div className="mb-6 relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+                      <input
+                        type="text"
+                        placeholder="Search PYQs..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
+                      />
+                    </div>
+
+                    {filteredPYQs.length === 0 ? (
+                      <div className="text-center py-12 text-muted-foreground">
+                        No PYQs found for this selection
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {filteredPYQs.map((pyq) => (
+                          <div
+                            key={pyq.id}
+                            className="p-6 border rounded-xl hover:border-primary hover:shadow-lg transition-all"
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <h3 className="text-xl font-semibold mb-2">{pyq.title}</h3>
+                                <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+                                  <span className="px-3 py-1 bg-primary/10 rounded-full">
+                                    {pyq.branch}
+                                  </span>
+                                  <span className="px-3 py-1 bg-secondary/10 rounded-full">
+                                    Sem {pyq.semester}
+                                  </span>
+                                  <span className="px-3 py-1 bg-accent/10 rounded-full">
+                                    {pyq.year}
+                                  </span>
+                                  <span className="px-3 py-1 bg-muted rounded-full">
+                                    {pyq.subject}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="flex gap-2">
+                                <a
+                                  href={pyq.file_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="p-2 hover:bg-primary/10 rounded-lg transition-colors"
+                                  title="View"
+                                >
+                                  <Eye className="w-5 h-5" />
+                                </a>
+                                <a
+                                  href={pyq.file_url}
+                                  download
+                                  className="p-2 hover:bg-primary/10 rounded-lg transition-colors"
+                                  title="Download"
+                                >
+                                  <Download className="w-5 h-5" />
+                                </a>
+                                {isAdmin && (
+                                  <button
+                                    onClick={() => handleDelete(pyq.id)}
+                                    className="p-2 hover:bg-destructive/10 text-destructive rounded-lg transition-colors"
+                                    title="Delete"
+                                  >
+                                    <Trash2 className="w-5 h-5" />
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+              </>
             )}
           </div>
-        )}
+        </div>
       </main>
       <Footer />
     </div>

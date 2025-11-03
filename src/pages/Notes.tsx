@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { BookOpen, Search, Upload, Download, Edit, Trash2, Eye, ChevronRight } from "lucide-react";
+import { BookOpen, Search, Upload, Download, Edit, Trash2, Eye, ChevronRight, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
@@ -141,33 +141,48 @@ const Notes = () => {
               </button>
             </div>
 
-            {/* Breadcrumb Navigation */}
-            <div className="mb-6 flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
-              <button onClick={resetNavigation} className="hover:text-primary transition-colors">
-                All Branches
-              </button>
-              {selectedBranch && (
-                <>
-                  <ChevronRight className="w-4 h-4" />
-                  <button onClick={() => { setSelectedSemester(null); setSelectedSubject(null); }} className="hover:text-primary transition-colors">
-                    {selectedBranch}
-                  </button>
-                </>
+            {/* Back Button & Breadcrumb Navigation */}
+            <div className="mb-8 flex items-center gap-4">
+              {(selectedBranch || selectedSemester || selectedSubject) && (
+                <button
+                  onClick={() => {
+                    if (selectedSubject) setSelectedSubject(null);
+                    else if (selectedSemester) setSelectedSemester(null);
+                    else if (selectedBranch) setSelectedBranch(null);
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 bg-card hover:bg-accent rounded-xl transition-all duration-300 border border-border/50 hover:border-primary/50 hover:shadow-lg group"
+                >
+                  <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                  <span className="font-medium">Back</span>
+                </button>
               )}
-              {selectedSemester && (
-                <>
-                  <ChevronRight className="w-4 h-4" />
-                  <button onClick={() => setSelectedSubject(null)} className="hover:text-primary transition-colors">
-                    Semester {selectedSemester}
-                  </button>
-                </>
-              )}
-              {selectedSubject && (
-                <>
-                  <ChevronRight className="w-4 h-4" />
-                  <span className="text-primary font-semibold">{selectedSubject}</span>
-                </>
-              )}
+              <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+                <button onClick={resetNavigation} className="hover:text-primary transition-colors font-medium">
+                  All Branches
+                </button>
+                {selectedBranch && (
+                  <>
+                    <ChevronRight className="w-4 h-4" />
+                    <button onClick={() => { setSelectedSemester(null); setSelectedSubject(null); }} className="hover:text-primary transition-colors font-medium">
+                      {selectedBranch}
+                    </button>
+                  </>
+                )}
+                {selectedSemester && (
+                  <>
+                    <ChevronRight className="w-4 h-4" />
+                    <button onClick={() => setSelectedSubject(null)} className="hover:text-primary transition-colors font-medium">
+                      Semester {selectedSemester}
+                    </button>
+                  </>
+                )}
+                {selectedSubject && (
+                  <>
+                    <ChevronRight className="w-4 h-4" />
+                    <span className="text-primary font-semibold">{selectedSubject}</span>
+                  </>
+                )}
+              </div>
             </div>
 
             {loading ? (
@@ -179,66 +194,96 @@ const Notes = () => {
               <>
                 {/* Branch Selection */}
                 {!selectedBranch && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {branches.map((branch) => (
-                      <button
-                        key={branch}
-                        onClick={() => setSelectedBranch(branch)}
-                        className="p-8 bg-gradient-to-br from-card via-card to-primary/5 border-2 border-border/50 rounded-2xl hover:border-primary hover:shadow-2xl hover:scale-105 transition-all duration-300 text-left group relative overflow-hidden"
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        <h3 className="font-bold text-xl group-hover:text-primary transition-colors relative z-10 mb-2">
-                          {branch}
-                        </h3>
-                        <p className="text-sm text-muted-foreground relative z-10">
-                          Click to view semesters
-                        </p>
-                        <ChevronRight className="w-6 h-6 absolute bottom-4 right-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
-                      </button>
-                    ))}
+                  <div className="space-y-6">
+                    <div className="text-center mb-8">
+                      <h2 className="text-2xl font-bold mb-2">Choose Your Branch</h2>
+                      <p className="text-muted-foreground">Select a branch to explore study materials</p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {branches.map((branch) => (
+                        <button
+                          key={branch}
+                          onClick={() => setSelectedBranch(branch)}
+                          className="p-8 bg-gradient-to-br from-card to-card/50 border border-border/50 rounded-2xl hover:border-primary hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1 transition-all duration-300 text-left group relative overflow-hidden"
+                        >
+                          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500" />
+                          <h3 className="font-bold text-xl group-hover:text-primary transition-colors relative z-10 mb-3">
+                            {branch}
+                          </h3>
+                          <p className="text-sm text-muted-foreground relative z-10 mb-4">
+                            Access study materials and notes
+                          </p>
+                          <div className="flex items-center gap-2 text-sm text-primary relative z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <span>Explore</span>
+                            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                          </div>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 )}
 
                 {/* Semester Selection */}
                 {selectedBranch && !selectedSemester && (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {semesters.map((sem) => (
-                      <button
-                        key={sem}
-                        onClick={() => setSelectedSemester(sem)}
-                        className="p-8 bg-gradient-to-br from-card to-secondary/10 border-2 border-border/50 rounded-2xl hover:border-secondary hover:shadow-2xl hover:scale-105 transition-all duration-300 group relative overflow-hidden"
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-br from-secondary/0 to-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        <h3 className="font-bold text-2xl group-hover:text-secondary transition-colors relative z-10">
-                          Sem {sem}
-                        </h3>
-                      </button>
-                    ))}
+                  <div className="space-y-6">
+                    <div className="text-center mb-8">
+                      <h2 className="text-2xl font-bold mb-2">Select Semester</h2>
+                      <p className="text-muted-foreground">Choose your current semester</p>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                      {semesters.map((sem) => (
+                        <button
+                          key={sem}
+                          onClick={() => setSelectedSemester(sem)}
+                          className="aspect-square p-8 bg-gradient-to-br from-card to-card/50 border border-border/50 rounded-2xl hover:border-secondary hover:shadow-2xl hover:shadow-secondary/10 hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden flex flex-col items-center justify-center"
+                        >
+                          <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          <div className="text-5xl font-bold text-muted-foreground/20 group-hover:text-secondary/30 transition-colors mb-2">{sem}</div>
+                          <h3 className="font-bold text-xl group-hover:text-secondary transition-colors relative z-10">
+                            Semester
+                          </h3>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 )}
 
                 {/* Subject Selection */}
                 {selectedBranch && selectedSemester && !selectedSubject && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {getUniqueValues("subject").length > 0 ? (
-                      getUniqueValues("subject").map((subject) => (
-                        <button
-                          key={subject}
-                          onClick={() => setSelectedSubject(subject as string)}
-                          className="p-6 bg-gradient-to-br from-card to-accent/10 border-2 border-border/50 rounded-2xl hover:border-accent hover:shadow-2xl hover:scale-105 transition-all duration-300 text-left group relative overflow-hidden"
-                        >
-                          <div className="absolute inset-0 bg-gradient-to-br from-accent/0 to-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                          <h3 className="font-semibold text-lg group-hover:text-accent transition-colors relative z-10">
-                            {subject}
-                          </h3>
-                          <ChevronRight className="w-5 h-5 absolute bottom-4 right-4 text-muted-foreground group-hover:text-accent group-hover:translate-x-1 transition-all" />
-                        </button>
-                      ))
-                    ) : (
-                      <div className="col-span-full text-center py-12 text-muted-foreground bg-card/50 rounded-xl border border-dashed">
-                        No subjects available for this selection
-                      </div>
-                    )}
+                  <div className="space-y-6">
+                    <div className="text-center mb-8">
+                      <h2 className="text-2xl font-bold mb-2">Choose Subject</h2>
+                      <p className="text-muted-foreground">Select a subject to view notes</p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {getUniqueValues("subject").length > 0 ? (
+                        getUniqueValues("subject").map((subject) => (
+                          <button
+                            key={subject}
+                            onClick={() => setSelectedSubject(subject as string)}
+                            className="p-8 bg-gradient-to-br from-card to-card/50 border border-border/50 rounded-2xl hover:border-accent hover:shadow-2xl hover:shadow-accent/10 hover:-translate-y-1 transition-all duration-300 text-left group relative overflow-hidden"
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            <div className="absolute bottom-0 right-0 w-24 h-24 bg-accent/5 rounded-full -mr-12 -mb-12 group-hover:scale-150 transition-transform duration-500" />
+                            <BookOpen className="w-8 h-8 mb-4 text-accent/50 group-hover:text-accent transition-colors" />
+                            <h3 className="font-bold text-lg group-hover:text-accent transition-colors relative z-10 mb-2">
+                              {subject}
+                            </h3>
+                            <p className="text-sm text-muted-foreground relative z-10">
+                              View all notes
+                            </p>
+                            <ChevronRight className="w-5 h-5 absolute top-8 right-8 text-muted-foreground group-hover:text-accent group-hover:translate-x-1 transition-all" />
+                          </button>
+                        ))
+                      ) : (
+                        <div className="col-span-full text-center py-16 text-muted-foreground bg-card/30 rounded-2xl border border-dashed backdrop-blur-sm">
+                          <BookOpen className="w-16 h-16 mx-auto mb-4 opacity-30" />
+                          <p className="text-lg font-medium">No subjects available</p>
+                          <p className="text-sm mt-2">Check back later for updates</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
 

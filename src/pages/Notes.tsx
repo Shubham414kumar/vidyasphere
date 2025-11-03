@@ -28,7 +28,6 @@ const Notes = () => {
   // Navigation state
   const [selectedBranch, setSelectedBranch] = useState<string | null>(null);
   const [selectedSemester, setSelectedSemester] = useState<string | null>(null);
-  const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
 
   const branches = [
@@ -41,7 +40,6 @@ const Notes = () => {
   ];
 
   const semesters = ["1", "2", "3", "4", "5", "6", "7", "8"];
-  const years = [2020, 2021, 2022, 2023, 2024, 2025];
 
   useEffect(() => {
     checkAdminStatus();
@@ -95,7 +93,6 @@ const Notes = () => {
       .filter(note => {
         if (selectedBranch && note.branch !== selectedBranch) return false;
         if (selectedSemester && note.semester !== selectedSemester) return false;
-        if (selectedYear && note.year !== selectedYear) return false;
         if (selectedSubject && note.subject !== selectedSubject) return false;
         return true;
       })
@@ -105,12 +102,11 @@ const Notes = () => {
   };
 
   const filteredNotes = notes.filter(note => {
-    if (!selectedBranch || !selectedSemester || !selectedYear || !selectedSubject) return false;
+    if (!selectedBranch || !selectedSemester || !selectedSubject) return false;
     
     const matchesFilters = 
       note.branch === selectedBranch &&
       note.semester === selectedSemester &&
-      note.year === selectedYear &&
       note.subject === selectedSubject;
     
     const matchesSearch = note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -122,7 +118,6 @@ const Notes = () => {
   const resetNavigation = () => {
     setSelectedBranch(null);
     setSelectedSemester(null);
-    setSelectedYear(null);
     setSelectedSubject(null);
   };
 
@@ -154,7 +149,7 @@ const Notes = () => {
               {selectedBranch && (
                 <>
                   <ChevronRight className="w-4 h-4" />
-                  <button onClick={() => { setSelectedSemester(null); setSelectedYear(null); setSelectedSubject(null); }} className="hover:text-primary transition-colors">
+                  <button onClick={() => { setSelectedSemester(null); setSelectedSubject(null); }} className="hover:text-primary transition-colors">
                     {selectedBranch}
                   </button>
                 </>
@@ -162,16 +157,8 @@ const Notes = () => {
               {selectedSemester && (
                 <>
                   <ChevronRight className="w-4 h-4" />
-                  <button onClick={() => { setSelectedYear(null); setSelectedSubject(null); }} className="hover:text-primary transition-colors">
-                    Semester {selectedSemester}
-                  </button>
-                </>
-              )}
-              {selectedYear && (
-                <>
-                  <ChevronRight className="w-4 h-4" />
                   <button onClick={() => setSelectedSubject(null)} className="hover:text-primary transition-colors">
-                    Year {selectedYear}
+                    Semester {selectedSemester}
                   </button>
                 </>
               )}
@@ -192,19 +179,21 @@ const Notes = () => {
               <>
                 {/* Branch Selection */}
                 {!selectedBranch && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {branches.map((branch) => (
                       <button
                         key={branch}
                         onClick={() => setSelectedBranch(branch)}
-                        className="p-6 border rounded-xl hover:border-primary hover:shadow-lg transition-all text-left group"
+                        className="p-8 bg-gradient-to-br from-card via-card to-primary/5 border-2 border-border/50 rounded-2xl hover:border-primary hover:shadow-2xl hover:scale-105 transition-all duration-300 text-left group relative overflow-hidden"
                       >
-                        <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">
+                        <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <h3 className="font-bold text-xl group-hover:text-primary transition-colors relative z-10 mb-2">
                           {branch}
                         </h3>
-                        <p className="text-sm text-muted-foreground mt-2">
+                        <p className="text-sm text-muted-foreground relative z-10">
                           Click to view semesters
                         </p>
+                        <ChevronRight className="w-6 h-6 absolute bottom-4 right-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
                       </button>
                     ))}
                   </div>
@@ -217,27 +206,11 @@ const Notes = () => {
                       <button
                         key={sem}
                         onClick={() => setSelectedSemester(sem)}
-                        className="p-6 border rounded-xl hover:border-primary hover:shadow-lg transition-all group"
+                        className="p-8 bg-gradient-to-br from-card to-secondary/10 border-2 border-border/50 rounded-2xl hover:border-secondary hover:shadow-2xl hover:scale-105 transition-all duration-300 group relative overflow-hidden"
                       >
-                        <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">
-                          Semester {sem}
-                        </h3>
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {/* Year Selection */}
-                {selectedBranch && selectedSemester && !selectedYear && (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {years.map((year) => (
-                      <button
-                        key={year}
-                        onClick={() => setSelectedYear(year)}
-                        className="p-6 border rounded-xl hover:border-primary hover:shadow-lg transition-all group"
-                      >
-                        <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">
-                          Year {year}
+                        <div className="absolute inset-0 bg-gradient-to-br from-secondary/0 to-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <h3 className="font-bold text-2xl group-hover:text-secondary transition-colors relative z-10">
+                          Sem {sem}
                         </h3>
                       </button>
                     ))}
@@ -245,22 +218,24 @@ const Notes = () => {
                 )}
 
                 {/* Subject Selection */}
-                {selectedBranch && selectedSemester && selectedYear && !selectedSubject && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {selectedBranch && selectedSemester && !selectedSubject && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {getUniqueValues("subject").length > 0 ? (
                       getUniqueValues("subject").map((subject) => (
                         <button
                           key={subject}
                           onClick={() => setSelectedSubject(subject as string)}
-                          className="p-6 border rounded-xl hover:border-primary hover:shadow-lg transition-all text-left group"
+                          className="p-6 bg-gradient-to-br from-card to-accent/10 border-2 border-border/50 rounded-2xl hover:border-accent hover:shadow-2xl hover:scale-105 transition-all duration-300 text-left group relative overflow-hidden"
                         >
-                          <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">
+                          <div className="absolute inset-0 bg-gradient-to-br from-accent/0 to-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          <h3 className="font-semibold text-lg group-hover:text-accent transition-colors relative z-10">
                             {subject}
                           </h3>
+                          <ChevronRight className="w-5 h-5 absolute bottom-4 right-4 text-muted-foreground group-hover:text-accent group-hover:translate-x-1 transition-all" />
                         </button>
                       ))
                     ) : (
-                      <div className="col-span-full text-center py-12 text-muted-foreground">
+                      <div className="col-span-full text-center py-12 text-muted-foreground bg-card/50 rounded-xl border border-dashed">
                         No subjects available for this selection
                       </div>
                     )}
@@ -268,7 +243,7 @@ const Notes = () => {
                 )}
 
                 {/* Notes List */}
-                {selectedBranch && selectedSemester && selectedYear && selectedSubject && (
+                {selectedBranch && selectedSemester && selectedSubject && (
                   <>
                     <div className="mb-6 relative">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
@@ -282,59 +257,66 @@ const Notes = () => {
                     </div>
 
                     {filteredNotes.length === 0 ? (
-                      <div className="text-center py-12 text-muted-foreground">
+                      <div className="text-center py-12 text-muted-foreground bg-card/50 rounded-xl border border-dashed">
                         No notes found for this selection
                       </div>
                     ) : (
-                      <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {filteredNotes.map((note) => (
                           <div
                             key={note.id}
-                            className="p-6 border rounded-xl hover:border-primary hover:shadow-lg transition-all"
+                            className="group p-6 bg-gradient-to-br from-card via-card to-primary/5 border-2 border-border/50 rounded-2xl hover:border-primary hover:shadow-2xl transition-all duration-300 relative overflow-hidden"
                           >
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <h3 className="text-xl font-semibold mb-2">{note.title}</h3>
-                                <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-                                  <span className="px-3 py-1 bg-primary/10 rounded-full">
-                                    {note.branch}
-                                  </span>
-                                  <span className="px-3 py-1 bg-secondary/10 rounded-full">
-                                    Sem {note.semester}
-                                  </span>
-                                  <span className="px-3 py-1 bg-accent/10 rounded-full">
+                            <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            <div className="relative z-10">
+                              <div className="flex items-start justify-between mb-4">
+                                <h3 className="text-xl font-bold group-hover:text-primary transition-colors flex-1 pr-4">
+                                  {note.title}
+                                </h3>
+                              </div>
+                              <div className="flex flex-wrap gap-2 mb-4">
+                                <span className="px-3 py-1 bg-primary/20 text-primary rounded-full text-sm font-medium">
+                                  {note.branch}
+                                </span>
+                                <span className="px-3 py-1 bg-secondary/20 text-secondary rounded-full text-sm font-medium">
+                                  Sem {note.semester}
+                                </span>
+                                {note.year && (
+                                  <span className="px-3 py-1 bg-accent/20 text-accent rounded-full text-sm font-medium">
                                     {note.year}
                                   </span>
-                                  <span className="px-3 py-1 bg-muted rounded-full">
-                                    {note.subject}
-                                  </span>
-                                </div>
+                                )}
+                                <span className="px-3 py-1 bg-muted text-foreground rounded-full text-sm font-medium">
+                                  {note.subject}
+                                </span>
                               </div>
-                              <div className="flex gap-2">
+                              <div className="flex gap-2 pt-4 border-t border-border/50">
                                 <a
                                   href={note.file_url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="p-2 hover:bg-primary/10 rounded-lg transition-colors"
+                                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary hover:text-primary-foreground rounded-lg transition-all font-medium"
                                   title="View"
                                 >
-                                  <Eye className="w-5 h-5" />
+                                  <Eye className="w-4 h-4" />
+                                  View
                                 </a>
                                 <a
                                   href={note.file_url}
                                   download
-                                  className="p-2 hover:bg-primary/10 rounded-lg transition-colors"
+                                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-secondary/10 hover:bg-secondary hover:text-secondary-foreground rounded-lg transition-all font-medium"
                                   title="Download"
                                 >
-                                  <Download className="w-5 h-5" />
+                                  <Download className="w-4 h-4" />
+                                  Download
                                 </a>
                                 {isAdmin && (
                                   <button
                                     onClick={() => handleDelete(note.id)}
-                                    className="p-2 hover:bg-destructive/10 text-destructive rounded-lg transition-colors"
+                                    className="px-4 py-2 bg-destructive/10 hover:bg-destructive hover:text-destructive-foreground rounded-lg transition-all"
                                     title="Delete"
                                   >
-                                    <Trash2 className="w-5 h-5" />
+                                    <Trash2 className="w-4 h-4" />
                                   </button>
                                 )}
                               </div>

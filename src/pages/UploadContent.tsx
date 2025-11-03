@@ -192,14 +192,16 @@ const UploadContent = () => {
                 className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
                 required
               />
-              <input
-                type="number"
-                placeholder="Year (e.g., 2023)"
-                value={year}
-                onChange={(e) => setYear(e.target.value)}
-                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
-                required
-              />
+              {type === "pyq" && (
+                <input
+                  type="number"
+                  placeholder="Year (e.g., 2023)"
+                  value={year}
+                  onChange={(e) => setYear(e.target.value)}
+                  className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
+                  required
+                />
+              )}
               <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary transition-colors">
                 <input
                   type="file"

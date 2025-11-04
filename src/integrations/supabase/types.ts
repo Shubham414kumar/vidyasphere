@@ -22,7 +22,7 @@ export type Database = {
           present: boolean
           subject: string
           subject_id: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           created_at?: string | null
@@ -31,7 +31,7 @@ export type Database = {
           present: boolean
           subject: string
           subject_id?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           created_at?: string | null
@@ -40,7 +40,7 @@ export type Database = {
           present?: boolean
           subject?: string
           subject_id?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -49,13 +49,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "subjects"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "attendance_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["user_id"]
           },
         ]
       }

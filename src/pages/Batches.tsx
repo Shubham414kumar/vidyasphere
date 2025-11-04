@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FileText, Search, Upload, Download, Edit, Trash2, Eye, ChevronRight } from "lucide-react";
+import { FileText, Search, Upload, Download, Edit, Trash2, Eye, ChevronRight, ArrowLeft, GraduationCap } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";

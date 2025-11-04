@@ -273,7 +273,7 @@ export type Database = {
           semester: string | null
           subject: string | null
           title: string
-          uploaded_by: string | null
+          uploaded_by: string
           year: number | null
         }
         Insert: {
@@ -286,7 +286,7 @@ export type Database = {
           semester?: string | null
           subject?: string | null
           title: string
-          uploaded_by?: string | null
+          uploaded_by: string
           year?: number | null
         }
         Update: {
@@ -299,18 +299,10 @@ export type Database = {
           semester?: string | null
           subject?: string | null
           title?: string
-          uploaded_by?: string | null
+          uploaded_by?: string
           year?: number | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "notes_uploaded_by_fkey"
-            columns: ["uploaded_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       payments: {
         Row: {
@@ -385,7 +377,7 @@ export type Database = {
           semester: string | null
           subject: string | null
           title: string
-          uploaded_by: string | null
+          uploaded_by: string
           year: number | null
         }
         Insert: {
@@ -397,7 +389,7 @@ export type Database = {
           semester?: string | null
           subject?: string | null
           title: string
-          uploaded_by?: string | null
+          uploaded_by: string
           year?: number | null
         }
         Update: {
@@ -409,18 +401,10 @@ export type Database = {
           semester?: string | null
           subject?: string | null
           title?: string
-          uploaded_by?: string | null
+          uploaded_by?: string
           year?: number | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "pyqs_uploaded_by_fkey"
-            columns: ["uploaded_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       subjects: {
         Row: {

@@ -19,12 +19,16 @@ const Attendance = () => {
   const fetchSubjectsAndAttendance = async () => {
     try {
       setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
       
-      if (!user) {
+      if (authError || !user) {
+        console.log("Auth error or no user:", authError);
         toast.error("Please login to view attendance");
+        setLoading(false);
         return;
       }
+
+      console.log("Fetching subjects for user:", user.id);
 
       const { data: subjectsData, error: subjectsError } = await supabase
         .from('subjects')
@@ -32,7 +36,12 @@ const Attendance = () => {
         .eq('user_id', user.id)
         .order('name');
 
-      if (subjectsError) throw subjectsError;
+      if (subjectsError) {
+        console.error("Subjects error:", subjectsError);
+        throw subjectsError;
+      }
+      
+      console.log("Subjects fetched:", subjectsData);
       setSubjects(subjectsData || []);
 
       const { data: attendanceData, error: attendanceError } = await supabase
@@ -41,11 +50,16 @@ const Attendance = () => {
         .eq('user_id', user.id)
         .order('date', { ascending: false });
 
-      if (attendanceError) throw attendanceError;
+      if (attendanceError) {
+        console.error("Attendance error:", attendanceError);
+        throw attendanceError;
+      }
+      
+      console.log("Attendance fetched:", attendanceData);
       setAttendance(attendanceData || []);
     } catch (error: any) {
       console.error('Error fetching data:', error);
-      toast.error("Failed to load data");
+      toast.error(error.message || "Failed to load data");
     } finally {
       setLoading(false);
     }
@@ -109,6 +123,22 @@ const Attendance = () => {
       
       const subject = subjects.find(s => s.id === subjectId);
       
+      console.log("Marking attendance:", { user_id: user.id, subject_id: subjectId, subject: subject?.name, date: today, present });
+      
+      // Check if attendance already exists for today
+      const { data: existingAttendance } = await supabase
+        .from('attendance')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('subject_id', subjectId)
+        .eq('date', today)
+        .single();
+
+      if (existingAttendance) {
+        toast.error("Attendance already marked for today");
+        return;
+      }
+
       const { error } = await supabase
         .from('attendance')
         .insert({
@@ -119,7 +149,10 @@ const Attendance = () => {
           present
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Insert error:", error);
+        throw error;
+      }
 
       toast.success("Attendance marked successfully");
       fetchSubjectsAndAttendance();

@@ -134,12 +134,9 @@ const Contact = () => {
                     <Phone className="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-2">Phone Numbers</h3>
+                    <h3 className="font-semibold mb-2">Phone Number</h3>
                     <div className="space-y-1 text-muted-foreground">
-                      <p>Main: +91 7667928057</p>
-                      <p>Inquiries: +91 7894781215</p>
-                      <p>Support: +91 7903647547</p>
-                      <p>Batches: +91 8235323227</p>
+                      <p>+91 7667928057</p>
                     </div>
                   </div>
                 </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { BookOpen, Search, Upload, Download, Edit, Trash2, Eye, ChevronRight, ArrowLeft } from "lucide-react";
+import { BookOpen, Search, Upload, Download, Edit, Trash2, Eye, ChevronRight, ArrowLeft, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
@@ -17,6 +17,8 @@ type Note = {
   file_url: string;
   category: string;
   uploaded_by: string;
+  view_count: number;
+  download_count: number;
 };
 
 const Notes = () => {
@@ -83,6 +85,33 @@ const Notes = () => {
       fetchNotes();
     } catch (error: any) {
       toast.error(error.message);
+    }
+  };
+
+  const handleView = async (note: Note) => {
+    try {
+      await supabase.rpc("increment_note_view_count", { note_id: note.id });
+      window.open(note.file_url, "_blank");
+    } catch (error: any) {
+      console.error("Error incrementing view count:", error);
+      window.open(note.file_url, "_blank");
+    }
+  };
+
+  const handleDownload = async (note: Note) => {
+    try {
+      await supabase.rpc("increment_note_download_count", { note_id: note.id });
+      const link = document.createElement("a");
+      link.href = note.file_url;
+      link.download = note.title;
+      link.click();
+      toast.success("Download started");
+    } catch (error: any) {
+      console.error("Error incrementing download count:", error);
+      const link = document.createElement("a");
+      link.href = note.file_url;
+      link.download = note.title;
+      link.click();
     }
   };
 
@@ -338,26 +367,43 @@ const Notes = () => {
                                   {note.subject}
                                 </span>
                               </div>
+                              
+                              {/* Popularity Stats */}
+                              <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground">
+                                <div className="flex items-center gap-1.5">
+                                  <Eye className="w-4 h-4" />
+                                  <span className="font-medium">{note.view_count}</span>
+                                  <span>views</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                  <Download className="w-4 h-4" />
+                                  <span className="font-medium">{note.download_count}</span>
+                                  <span>downloads</span>
+                                </div>
+                                {(note.view_count > 50 || note.download_count > 20) && (
+                                  <div className="flex items-center gap-1 text-accent">
+                                    <TrendingUp className="w-4 h-4" />
+                                    <span className="text-xs font-semibold">Popular</span>
+                                  </div>
+                                )}
+                              </div>
                               <div className="flex gap-2 pt-4 border-t border-border/50">
-                                <a
-                                  href={note.file_url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
+                                <button
+                                  onClick={() => handleView(note)}
                                   className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary hover:text-primary-foreground rounded-lg transition-all font-medium"
                                   title="View"
                                 >
                                   <Eye className="w-4 h-4" />
                                   View
-                                </a>
-                                <a
-                                  href={note.file_url}
-                                  download
+                                </button>
+                                <button
+                                  onClick={() => handleDownload(note)}
                                   className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-secondary/10 hover:bg-secondary hover:text-secondary-foreground rounded-lg transition-all font-medium"
                                   title="Download"
                                 >
                                   <Download className="w-4 h-4" />
                                   Download
-                                </a>
+                                </button>
                                 {isAdmin && (
                                   <button
                                     onClick={() => handleDelete(note.id)}

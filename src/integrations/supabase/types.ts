@@ -267,6 +267,7 @@ export type Database = {
           branch: string | null
           category: string
           created_at: string | null
+          download_count: number
           file_url: string
           grade: string | null
           id: string
@@ -274,12 +275,14 @@ export type Database = {
           subject: string | null
           title: string
           uploaded_by: string
+          view_count: number
           year: number | null
         }
         Insert: {
           branch?: string | null
           category: string
           created_at?: string | null
+          download_count?: number
           file_url: string
           grade?: string | null
           id?: string
@@ -287,12 +290,14 @@ export type Database = {
           subject?: string | null
           title: string
           uploaded_by: string
+          view_count?: number
           year?: number | null
         }
         Update: {
           branch?: string | null
           category?: string
           created_at?: string | null
+          download_count?: number
           file_url?: string
           grade?: string | null
           id?: string
@@ -300,6 +305,7 @@ export type Database = {
           subject?: string | null
           title?: string
           uploaded_by?: string
+          view_count?: number
           year?: number | null
         }
         Relationships: []
@@ -459,6 +465,14 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_note_download_count: {
+        Args: { note_id: string }
+        Returns: undefined
+      }
+      increment_note_view_count: {
+        Args: { note_id: string }
+        Returns: undefined
       }
     }
     Enums: {

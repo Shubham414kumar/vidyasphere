@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import notesCardBg from "@/assets/notes-card-bg.png";
 
 type Note = {
   id: string;
@@ -21,7 +22,6 @@ type Note = {
 const Notes = () => {
   const navigate = useNavigate();
   const [notes, setNotes] = useState<Note[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   
@@ -70,8 +70,6 @@ const Notes = () => {
       setNotes(data || []);
     } catch (error: any) {
       toast.error(error.message);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -185,13 +183,7 @@ const Notes = () => {
               </div>
             </div>
 
-            {loading ? (
-              <div className="text-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-                <p className="mt-4 text-muted-foreground">Loading notes...</p>
-              </div>
-            ) : (
-              <>
+            <>
                 {/* Branch Selection */}
                 {!selectedBranch && (
                   <div className="space-y-6">
@@ -310,10 +302,21 @@ const Notes = () => {
                         {filteredNotes.map((note) => (
                           <div
                             key={note.id}
-                            className="group p-6 bg-gradient-to-br from-card via-card to-primary/5 border-2 border-border/50 rounded-2xl hover:border-primary hover:shadow-2xl transition-all duration-300 relative overflow-hidden"
+                            className="group bg-gradient-to-br from-card via-card to-primary/5 border-2 border-border/50 rounded-2xl hover:border-primary hover:shadow-2xl transition-all duration-300 relative overflow-hidden"
                           >
                             <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                            <div className="relative z-10">
+                            
+                            {/* Image Header */}
+                            <div className="relative h-40 overflow-hidden rounded-t-2xl">
+                              <img 
+                                src={notesCardBg} 
+                                alt="Study notes" 
+                                className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-card via-card/50 to-transparent" />
+                            </div>
+
+                            <div className="relative z-10 p-6">
                               <div className="flex items-start justify-between mb-4">
                                 <h3 className="text-xl font-bold group-hover:text-primary transition-colors flex-1 pr-4">
                                   {note.title}
@@ -373,7 +376,6 @@ const Notes = () => {
                   </>
                 )}
               </>
-            )}
           </div>
         </div>
       </main>

@@ -88,30 +88,31 @@ const Notes = () => {
     }
   };
 
+  const edgeFnBase = "https://ldgbeajoyqwrqkirinmr.functions.supabase.co/download-note";
+
   const handleView = async (note: Note) => {
     try {
       await supabase.rpc("increment_note_view_count", { note_id: note.id });
-      window.open(note.file_url, "_blank");
-    } catch (error: any) {
-      console.error("Error incrementing view count:", error);
-      window.open(note.file_url, "_blank");
+    } catch (error) {
+      console.warn("View counter RPC failed, continuing to open.");
+    } finally {
+      const url = `${edgeFnBase}?mode=view&file_url=${encodeURIComponent(note.file_url)}`;
+      window.open(url, "_blank", "noopener");
     }
   };
 
   const handleDownload = async (note: Note) => {
     try {
       await supabase.rpc("increment_note_download_count", { note_id: note.id });
+    } catch (error) {
+      console.warn("Download counter RPC failed, continuing to download.");
+    } finally {
+      const url = `${edgeFnBase}?mode=download&file_url=${encodeURIComponent(note.file_url)}`;
       const link = document.createElement("a");
-      link.href = note.file_url;
-      link.download = note.title;
+      link.href = url;
+      link.rel = "noopener";
       link.click();
       toast.success("Download started");
-    } catch (error: any) {
-      console.error("Error incrementing download count:", error);
-      const link = document.createElement("a");
-      link.href = note.file_url;
-      link.download = note.title;
-      link.click();
     }
   };
 

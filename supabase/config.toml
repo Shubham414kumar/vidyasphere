@@ -1,1 +1,4 @@
 project_id = "ldgbeajoyqwrqkirinmr"
+
+[functions.download-note]
+verify_jwt = false

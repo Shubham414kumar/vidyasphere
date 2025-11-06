@@ -88,34 +88,36 @@ const Notes = () => {
     }
   };
 
-  const edgeFnBase = "https://ldgbeajoyqwrqkirinmr.functions.supabase.co/download-note";
-
-  const handleView = async (note: Note) => {
-    try {
-      await supabase.rpc("increment_note_view_count", { note_id: note.id });
-    } catch (error) {
-      console.warn("View counter RPC failed, continuing to open.");
-    } finally {
-      const url = `${edgeFnBase}?mode=view&file_url=${encodeURIComponent(note.file_url)}`;
-      window.open(url, "_blank", "noopener");
-    }
+  const handleView = (note: Note) => {
+    // Navigate to in-app viewer to avoid popup/ad-block issues
+    navigate(`/preview?file=${encodeURIComponent(note.file_url)}&id=${note.id}&title=${encodeURIComponent(note.title)}`);
   };
 
   const handleDownload = async (note: Note) => {
     try {
-      await supabase.rpc("increment_note_download_count", { note_id: note.id });
-    } catch (error) {
-      console.warn("Download counter RPC failed, continuing to download.");
-    } finally {
-      const url = `${edgeFnBase}?mode=download&file_url=${encodeURIComponent(note.file_url)}`;
+      // Increment download counter (best-effort)
+      try { await supabase.rpc("increment_note_download_count", { note_id: note.id }); } catch {}
+
+      // Fetch the public file as a blob and trigger a safe download
+      const response = await fetch(note.file_url, { mode: "cors" });
+      if (!response.ok) throw new Error("Download failed");
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
       const link = document.createElement("a");
-      link.href = url;
-      link.rel = "noopener";
+      const filename = note.file_url.split("/").pop() || `${note.title}`;
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
       toast.success("Download started");
+    } catch (error) {
+      console.warn("Blob download failed, falling back to direct URL.", error);
+      // Fallback: direct navigation to the file URL
+      window.location.href = note.file_url;
     }
   };
-
   const getUniqueValues = (key: keyof Note) => {
     const values = notes
       .filter(note => {

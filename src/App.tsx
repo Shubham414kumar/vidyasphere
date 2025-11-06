@@ -18,6 +18,7 @@ import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import UploadContent from "./pages/UploadContent";
 import Profile from "./pages/Profile";
+import Preview from "./pages/Preview";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ const App = () => (
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/upload-content" element={<UploadContent />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/preview" element={<Preview />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>

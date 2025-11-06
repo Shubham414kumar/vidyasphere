@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { BookOpen, Search, Upload, Download, Edit, Trash2, Eye, ChevronRight, ArrowLeft, TrendingUp } from "lucide-react";
+import { BookOpen, Search, Upload, Download, Edit, Trash2, Eye, ChevronRight, ArrowLeft, TrendingUp, Flame, Filter } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
@@ -26,11 +26,17 @@ const Notes = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
+  const [user, setUser] = useState<any>(null);
   
   // Navigation state
   const [selectedBranch, setSelectedBranch] = useState<string | null>(null);
   const [selectedSemester, setSelectedSemester] = useState<string | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
+
+  // Popular section state
+  const [showPopular, setShowPopular] = useState(true);
+  const [popularNotes, setPopularNotes] = useState<Note[]>([]);
+  const [popularFilter, setPopularFilter] = useState<string>("all"); // all, week, month
 
   const branches = [
     "Computer Science",
@@ -46,11 +52,13 @@ const Notes = () => {
   useEffect(() => {
     checkAdminStatus();
     fetchNotes();
-  }, []);
+    fetchPopularNotes();
+  }, [popularFilter]);
 
   const checkAdminStatus = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
+      setUser(user);
       const { data } = await supabase
         .from("user_roles")
         .select("role")
@@ -58,6 +66,41 @@ const Notes = () => {
         .eq("role", "admin")
         .maybeSingle();
       setIsAdmin(!!data);
+    }
+  };
+
+  const fetchPopularNotes = async () => {
+    try {
+      let query = supabase
+        .from("notes")
+        .select("*")
+        .order("view_count", { ascending: false });
+
+      // Apply time filter
+      if (popularFilter === "week") {
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        query = query.gte("created_at", weekAgo.toISOString());
+      } else if (popularFilter === "month") {
+        const monthAgo = new Date();
+        monthAgo.setMonth(monthAgo.getMonth() - 1);
+        query = query.gte("created_at", monthAgo.toISOString());
+      }
+
+      const { data, error } = await query.limit(10);
+
+      if (error) throw error;
+      
+      // Sort by combined popularity score
+      const sorted = (data || []).sort((a, b) => {
+        const scoreA = a.view_count + a.download_count * 2;
+        const scoreB = b.view_count + b.download_count * 2;
+        return scoreB - scoreA;
+      });
+      
+      setPopularNotes(sorted);
+    } catch (error: any) {
+      console.error("Error fetching popular notes:", error);
     }
   };
 
@@ -170,6 +213,155 @@ const Notes = () => {
                 Upload Note
               </button>
             </div>
+
+            {/* Most Popular Section */}
+            {showPopular && !selectedBranch && popularNotes.length > 0 && (
+              <div className="mb-12 bg-gradient-to-br from-accent/10 via-primary/5 to-secondary/10 rounded-2xl p-8 border-2 border-primary/20 shadow-xl">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg">
+                      <Flame className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold gradient-text flex items-center gap-2">
+                        Most Popular Notes
+                      </h2>
+                      <p className="text-sm text-muted-foreground">Top trending study materials</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowPopular(false)}
+                    className="text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {/* Filter Buttons */}
+                <div className="flex gap-2 mb-6">
+                  <button
+                    onClick={() => setPopularFilter("all")}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                      popularFilter === "all"
+                        ? "bg-primary text-primary-foreground shadow-lg"
+                        : "bg-card hover:bg-accent border border-border"
+                    }`}
+                  >
+                    All Time
+                  </button>
+                  <button
+                    onClick={() => setPopularFilter("month")}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                      popularFilter === "month"
+                        ? "bg-primary text-primary-foreground shadow-lg"
+                        : "bg-card hover:bg-accent border border-border"
+                    }`}
+                  >
+                    This Month
+                  </button>
+                  <button
+                    onClick={() => setPopularFilter("week")}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                      popularFilter === "week"
+                        ? "bg-primary text-primary-foreground shadow-lg"
+                        : "bg-card hover:bg-accent border border-border"
+                    }`}
+                  >
+                    This Week
+                  </button>
+                </div>
+
+                {/* Popular Notes Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {popularNotes.map((note, index) => (
+                    <div
+                      key={note.id}
+                      className="group bg-card/80 backdrop-blur-sm border-2 border-border/50 rounded-xl hover:border-primary hover:shadow-xl transition-all duration-300 relative overflow-hidden"
+                    >
+                      {/* Ranking Badge */}
+                      <div className="absolute top-3 left-3 w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-sm shadow-lg z-10">
+                        #{index + 1}
+                      </div>
+
+                      <div className="p-5 pt-12">
+                        <h3 className="text-lg font-bold mb-3 group-hover:text-primary transition-colors line-clamp-2">
+                          {note.title}
+                        </h3>
+                        
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          {note.branch && (
+                            <span className="px-2 py-1 bg-primary/20 text-primary rounded-full text-xs font-medium">
+                              {note.branch}
+                            </span>
+                          )}
+                          {note.semester && (
+                            <span className="px-2 py-1 bg-secondary/20 text-secondary rounded-full text-xs font-medium">
+                              Sem {note.semester}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Stats */}
+                        <div className="flex items-center gap-3 mb-4 text-sm">
+                          <div className="flex items-center gap-1 text-muted-foreground">
+                            <Eye className="w-3.5 h-3.5" />
+                            <span className="font-semibold">{note.view_count}</span>
+                          </div>
+                          <div className="flex items-center gap-1 text-muted-foreground">
+                            <Download className="w-3.5 h-3.5" />
+                            <span className="font-semibold">{note.download_count}</span>
+                          </div>
+                          <div className="flex items-center gap-1 text-accent">
+                            <TrendingUp className="w-3.5 h-3.5" />
+                            <span className="text-xs font-semibold">
+                              {note.view_count + note.download_count * 2} pts
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleView(note)}
+                            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-primary/10 hover:bg-primary hover:text-primary-foreground rounded-lg transition-all text-sm font-medium"
+                          >
+                            <Eye className="w-4 h-4" />
+                            View
+                          </button>
+                          <button
+                            onClick={() => handleDownload(note)}
+                            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-secondary/10 hover:bg-secondary hover:text-secondary-foreground rounded-lg transition-all text-sm font-medium"
+                          >
+                            <Download className="w-4 h-4" />
+                            Download
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Show All Button */}
+                <div className="mt-6 text-center">
+                  <button
+                    onClick={() => setShowPopular(false)}
+                    className="px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-xl hover:shadow-xl transition-all font-semibold"
+                  >
+                    Browse All Notes
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {!showPopular && !selectedBranch && (
+              <button
+                onClick={() => setShowPopular(true)}
+                className="mb-6 flex items-center gap-2 px-4 py-2 bg-accent/20 hover:bg-accent hover:text-accent-foreground rounded-lg transition-all font-medium"
+              >
+                <Flame className="w-4 h-4" />
+                Show Popular Notes
+              </button>
+            )}
 
             {/* Back Button & Breadcrumb Navigation */}
             <div className="mb-8 flex items-center gap-4">

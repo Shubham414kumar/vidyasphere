@@ -19,6 +19,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import UploadContent from "./pages/UploadContent";
 import Profile from "./pages/Profile";
 import Preview from "./pages/Preview";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,7 @@ const App = () => (
             <Route path="/upload-content" element={<UploadContent />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/preview" element={<Preview />} />
+            <Route path="/admin" element={<AdminDashboard />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>

@@ -7,19 +7,39 @@ import logo from "@/assets/vidyasphere-logo.png";
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setIsLoggedIn(!!session);
+      if (session) {
+        checkAdminStatus(session.user.id);
+      }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsLoggedIn(!!session);
+      if (session) {
+        checkAdminStatus(session.user.id);
+      } else {
+        setIsAdmin(false);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const checkAdminStatus = async (userId: string) => {
+    const { data } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .eq("role", "admin")
+      .single();
+    
+    setIsAdmin(!!data);
+  };
 
   const navLinks = [
     { to: "/courses", label: "Courses" },
@@ -61,6 +81,21 @@ const Navigation = () => {
                 )}
               </Link>
             ))}
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className={`relative font-medium transition-all ${
+                  isActive("/admin")
+                    ? "text-primary drop-shadow-[0_0_8px_hsl(var(--primary))]"
+                    : "text-foreground hover:text-primary"
+                }`}
+              >
+                Admin
+                {isActive("/admin") && (
+                  <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-primary to-secondary rounded-full shadow-[0_0_8px_hsl(var(--primary))]" />
+                )}
+              </Link>
+            )}
             {isLoggedIn ? (
               <Link
                 to="/profile"
@@ -106,6 +141,19 @@ const Navigation = () => {
                   {link.label}
                 </Link>
               ))}
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  onClick={() => setIsOpen(false)}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                    isActive("/admin")
+                      ? "bg-primary/20 text-primary drop-shadow-[0_0_8px_hsl(var(--primary))]"
+                      : "hover:bg-muted text-foreground"
+                  }`}
+                >
+                  Admin
+                </Link>
+              )}
               {isLoggedIn ? (
                 <Link
                   to="/profile"
